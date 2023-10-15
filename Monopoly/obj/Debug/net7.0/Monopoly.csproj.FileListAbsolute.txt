@@ -1,0 +1,15 @@
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\bin\Debug\net7.0\Monopoly.exe
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\bin\Debug\net7.0\Monopoly.deps.json
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\bin\Debug\net7.0\Monopoly.runtimeconfig.json
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\bin\Debug\net7.0\Monopoly.dll
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\bin\Debug\net7.0\Monopoly.pdb
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.csproj.AssemblyReference.cache
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.AssemblyInfoInputs.cache
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.AssemblyInfo.cs
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.csproj.CoreCompileInputs.cache
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.dll
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\refint\Monopoly.dll
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.pdb
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\Monopoly.genruntimeconfig.cache
+C:\Users\iuaiu\Documents\GitHub\Monopoly\Monopoly\obj\Debug\net7.0\ref\Monopoly.dll
