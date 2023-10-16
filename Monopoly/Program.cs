@@ -55,13 +55,18 @@ class MainMenu {
                 shouldContinue = false;
                 break;
             default:
-                Console.WriteLine("Ало дебил");
+                Console.WriteLine("Спробуйте ще раз ^_^");
                 break;
         }
     }
 
     internal void PlayWithComputer() {
         Console.WriteLine("*гра з комп'ютером*");
+        Game game = new Game();
+        for (int i = 0; i < 10; i++) {
+            Console.WriteLine(game.RollDice());
+            Console.WriteLine(game.RollCoin());
+        }
     }
 
     internal void PlayWithFriends() {
@@ -74,5 +79,76 @@ class MainMenu {
 
     internal void QuitGame() {
         Console.WriteLine("*виходимо з гри*");
+    }
+}
+
+struct PlayerPos {
+    public int x;
+    public int y;
+
+    public PlayerPos(int x = 0, int y = 0) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+class Player {
+    public int moneyAmount;
+    public string nameInGame;
+    public ConsoleColor chipColor;
+    public PlayerPos positionInField;
+    public bool isInPrison;
+    public int turnsToGoOutOfPrison;
+
+    public Player(string nameInGame = "default", int moneyAmount = 0, PlayerPos positionInField = new PlayerPos(),
+        ConsoleColor chipColor = ConsoleColor.White, bool isInPrison = false, int turnsToGoOutOfPrison = 0) {
+        this.nameInGame = nameInGame;
+        this.moneyAmount = moneyAmount;
+        this.positionInField = positionInField;
+        this.chipColor = chipColor;
+        this.isInPrison = isInPrison;
+        this.turnsToGoOutOfPrison = turnsToGoOutOfPrison;
+    }
+}
+
+class Game {
+    private Random _rand;
+
+    public Game() {
+        _rand = new Random();
+    }
+    public int RollDice() {
+        return _rand.Next(1, 7);
+    }
+
+    public bool RollCoin() {
+        return Convert.ToBoolean(_rand.Next(0, 2));
+    }
+}
+
+class Enterprise {
+    public Player? owner;
+    public int priceToBuy;
+    public int priceToBuildHome;
+    public int priceToPawnToBank;
+    public int priceToSellToBank;
+    public bool isPawnedInBank;
+    public int turnsToDisappearIfPawned;
+    public bool isCollectedThree;
+    public bool isBuiltHome;
+    public int priceToOthersPay;
+
+    public Enterprise(int priceToBuy, Player? owner = null, bool isPawnedInBank = false, 
+        int turnsToDisappearIfPawned = 0, bool isCollectedThree = false, bool isBuiltHome = false) {
+        this.owner = owner;
+        this.priceToBuy = priceToBuy;
+        this.priceToBuildHome = priceToBuy * 3;
+        this.priceToPawnToBank = priceToBuy / 2;
+        this.priceToSellToBank = priceToBuy;
+        this.isPawnedInBank = isPawnedInBank;
+        this.turnsToDisappearIfPawned = turnsToDisappearIfPawned;
+        this.isCollectedThree = isCollectedThree;
+        this.isBuiltHome = isBuiltHome;
+        this.priceToOthersPay = priceToBuy / 2;
     }
 }
