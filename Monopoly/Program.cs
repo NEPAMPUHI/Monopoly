@@ -62,7 +62,7 @@ class MainMenu {
 
     internal void PlayWithComputer() {
         Console.WriteLine("*гра з комп'ютером*");
-        Game game = new Game();
+        GamePlay game = new GamePlay();
         for (int i = 0; i < 10; i++) {
             Console.WriteLine(game.RollDice());
             Console.WriteLine(game.RollCoin());
@@ -94,8 +94,8 @@ struct PlayerPos {
 
 class Player {
     public int moneyAmount;
-    public string nameInGame;
-    public ConsoleColor chipColor;
+    public readonly string nameInGame;
+    public readonly ConsoleColor chipColor;
     public PlayerPos positionInField;
     public bool isInPrison;
     public int turnsToGoOutOfPrison;
@@ -111,10 +111,10 @@ class Player {
     }
 }
 
-class Game {
+class GamePlay {
     private Random _rand;
 
-    public Game() {
+    public GamePlay() {
         _rand = new Random();
     }
     public int RollDice() {
@@ -128,27 +128,49 @@ class Game {
 
 class Enterprise {
     public Player? owner;
-    public int priceToBuy;
-    public int priceToBuildHome;
-    public int priceToPawnToBank;
-    public int priceToSellToBank;
+    
+    private readonly int priceToBuy;
+    private readonly int priceToBuildHotel;
+    private readonly int priceToPawnToBank;
+    private readonly int priceToSellToBank;
+    
     public bool isPawnedInBank;
     public int turnsToDisappearIfPawned;
-    public bool isCollectedThree;
-    public bool isBuiltHome;
-    public int priceToOthersPay;
+    
+    public bool isBuiltHotel;
+    private readonly int priceOthersPayLevel1;
+    private readonly int priceOthersPayLevel2;
+    private readonly int priceOthersPayLevel3;
+    public int currentPriceOthersPay;
 
     public Enterprise(int priceToBuy, Player? owner = null, bool isPawnedInBank = false, 
-        int turnsToDisappearIfPawned = 0, bool isCollectedThree = false, bool isBuiltHome = false) {
+        int turnsToDisappearIfPawned = 0, bool isBuiltHome = false) {
         this.owner = owner;
+        
         this.priceToBuy = priceToBuy;
-        this.priceToBuildHome = priceToBuy * 3;
-        this.priceToPawnToBank = priceToBuy / 2;
-        this.priceToSellToBank = priceToBuy;
+        priceToBuildHotel = priceToBuy * 3;
+        priceToPawnToBank = priceToBuy / 2;
+        priceToSellToBank = priceToBuy;
+        
         this.isPawnedInBank = isPawnedInBank;
         this.turnsToDisappearIfPawned = turnsToDisappearIfPawned;
-        this.isCollectedThree = isCollectedThree;
-        this.isBuiltHome = isBuiltHome;
-        this.priceToOthersPay = priceToBuy / 2;
+        
+        isBuiltHotel = isBuiltHome;
+        priceOthersPayLevel1 = priceToBuy / 2;
+        priceOthersPayLevel2 = priceToBuy;
+        priceOthersPayLevel3 = priceToBuy * 2;
+        currentPriceOthersPay = priceOthersPayLevel1;
+    }
+}
+
+class Industry {
+    private ConsoleColor color;
+    private List<Enterprise> enterprises;
+    private bool isFull;
+
+    public Industry(ConsoleColor color, List<Enterprise> enterprises, bool isFull = false) {
+        this.color = color;
+        this.enterprises = enterprises;
+        this.isFull = isFull;
     }
 }
