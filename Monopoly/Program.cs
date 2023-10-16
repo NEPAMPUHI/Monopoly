@@ -7,13 +7,14 @@ class Program {
  
         System.Console.OutputEncoding = System.Text.Encoding.UTF8;
         System.Console.InputEncoding = enc1251;
+        
         App app = new App();
         app.Run();
     }
 }
 
 class App {
-    private MainMenu inMenu;
+    private readonly MainMenu inMenu;
 
     public App() {
         inMenu = new MainMenu();
@@ -82,11 +83,11 @@ class MainMenu {
     }
 }
 
-struct PlayerPos {
+struct Position {
     public int x;
     public int y;
 
-    public PlayerPos(int x = 0, int y = 0) {
+    public Position(int x = 0, int y = 0) {
         this.x = x;
         this.y = y;
     }
@@ -96,11 +97,11 @@ class Player {
     public int moneyAmount;
     public readonly string nameInGame;
     public readonly ConsoleColor chipColor;
-    public PlayerPos positionInField;
+    public Position positionInField;
     public bool isInPrison;
     public int turnsToGoOutOfPrison;
 
-    public Player(string nameInGame = "default", int moneyAmount = 0, PlayerPos positionInField = new PlayerPos(),
+    public Player(string nameInGame = "default", int moneyAmount = 0, Position positionInField = new Position(),
         ConsoleColor chipColor = ConsoleColor.White, bool isInPrison = false, int turnsToGoOutOfPrison = 0) {
         this.nameInGame = nameInGame;
         this.moneyAmount = moneyAmount;
@@ -112,10 +113,28 @@ class Player {
 }
 
 class GamePlay {
-    private Random _rand;
+    private readonly Random _rand;
+    public Enterprise[][] allEnterprises;
 
     public GamePlay() {
         _rand = new Random();
+        FillStartEnterprises(ref allEnterprises);
+    }
+
+    public void FillStartEnterprises(ref Enterprise[][] allEnterprises) {
+        int fieldLength = _rand.Next(1, 11);
+        allEnterprises = new Enterprise[fieldLength][];
+        for (int i = 0; i < fieldLength; i++) {
+            allEnterprises[i] = new Enterprise[fieldLength];
+            for (int k = 0; k < fieldLength; k++) {
+                if (RollCoin()) {
+                    allEnterprises[i][k] = new Enterprise(_rand.Next(1, 1001));
+                }
+                else {
+                    allEnterprises[i][k] = null;
+                }
+            }
+        }
     }
     public int RollDice() {
         return _rand.Next(1, 7);
@@ -174,3 +193,4 @@ class Industry {
         this.isFull = isFull;
     }
 }
+
