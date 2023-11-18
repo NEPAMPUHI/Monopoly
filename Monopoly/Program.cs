@@ -247,3 +247,10 @@ class Industry {
         this.isFull = isFull;
     }
 }
+
+class Card {
+    public void performAction() { //void??
+        
+    }
+}
+// hi
