@@ -61,12 +61,12 @@ public class Field {
         List<int> countryIndexesInFile =
             ChooseNonRepeatableNums(0, countries.Length, fieldArrays.Length);
         for (int i = 0; i < countryIndexesInFile.Count; i++) {
-            FillCountriesForEach(countries[countryIndexesInFile[i]], ref fieldArrays[i], out countriesArray[i],
+            FillCountriesForEach(countries[countryIndexesInFile[i]], i, out countriesArray[i],
                 ref curIndustryArrIndex);
         }
     }
 
-    private void FillCountriesForEach(string countryFileName, ref Enterprise[] curArray, out string curCounty,
+    private void FillCountriesForEach(string countryFileName, int curArrayIndex, out string curCounty,
         ref int curIndustryIndex) {
 
         curCounty = GetLastWordAfterSlash(countryFileName);
@@ -80,7 +80,7 @@ public class Field {
             string[] curIndustryFile = File.ReadAllLines(currentIndustryDir);
 
             int enterprisesAmount = countryIndustriesIndexes[i].Length;
-            List<Enterprise> curIndustry = new List<Enterprise>();
+            List<Pair> curIndustry = new List<Pair>();
             industriesArray[curIndustryIndex] = new Industry(curIndustry, currentIndustryName);
 
             int startPrice = Convert.ToInt32(curIndustryFile[0].Substring(0, curIndustryFile[0].IndexOf('-')));
@@ -93,10 +93,11 @@ public class Field {
                 int curPrice = random.Next(startPrice, startPrice + stepPrice);
                 startPrice += stepPrice;
                 curPrice = curPrice / 10 * 10;
-                curArray[countryIndustriesIndexes[i][k]] = new Enterprise(curPrice, industriesArray[curIndustryIndex],
+                fieldArrays[curArrayIndex][countryIndustriesIndexes[i][k]] = new Enterprise(curPrice,
+                    industriesArray[curIndustryIndex],
                     curIndustryFile[enterpriseIndexesInFile[k]]);
+                curIndustry.Add(new Pair(curArrayIndex, countryIndustriesIndexes[i][k]));
             }
-
             curIndustryIndex++;
         }
     }
@@ -108,8 +109,9 @@ public class Field {
             }
             else {
                 Console.WriteLine("Industry name: " + i.industryName);
-                foreach (var i1 in i.enterprises) {
-                    Console.WriteLine(i1.title + ", money to pay: " + i1.priceToBuy + ", industry name: " + i1.industry.industryName);
+                foreach (var i1 in i.enterprisesIndexes) {
+                    Enterprise i2 = fieldArrays[i1.arrayIndex][i1.enterpriseIndex];
+                    Console.WriteLine(i2.title + ", money to pay: " + i2.priceToBuy + ", industry name: " + i2.industry.industryName);
                 }
                 Console.WriteLine();
             }
