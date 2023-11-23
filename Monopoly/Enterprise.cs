@@ -2,8 +2,10 @@ namespace Monopoly;
 
 public class Enterprise {
     public Player? owner;
+    public Industry industry;
+    public string title;
 
-    private readonly int priceToBuy;
+    public readonly int priceToBuy;
     private readonly int priceToBuildHotel;
     private readonly int priceToPawnToBank;
     private readonly int priceToSellToBank;
@@ -17,9 +19,11 @@ public class Enterprise {
     private readonly int priceOthersPayLevel3;
     public int currentPriceOthersPay;
 
-    public Enterprise(int priceToBuy, Player? owner = null, bool isPawnedInBank = false,
+    public Enterprise(int priceToBuy, Industry industry, string title, Player? owner = null, bool isPawnedInBank = false,
         int turnsToDisappearIfPawned = 0, bool isBuiltHome = false) {
         this.owner = owner;
+        this.industry = industry;
+        this.title = title;
 
         this.priceToBuy = priceToBuy;
         priceToBuildHotel = priceToBuy * 3;

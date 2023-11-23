@@ -16,7 +16,7 @@ public class GamePlay {
             allEnterprises[i] = new Enterprise[fieldLength];
             for (int k = 0; k < fieldLength; k++) {
                 if (RollCoin()) {
-                    allEnterprises[i][k] = new Enterprise(_rand.Next(1, 1001));
+                    //allEnterprises[i][k] = new Enterprise(_rand.Next(1, 1001), "");
                 }
                 else {
                     allEnterprises[i][k] = null;
