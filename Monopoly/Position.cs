@@ -1,11 +1,11 @@
 namespace Monopoly; 
 
 public class Position {
-    public int x;
-    public int y;
+    public int arrayIndex;
+    public int cellIndex;
 
-    public Position(int x = 0, int y = 0) {
-        this.x = x;
-        this.y = y;
+    public Position(int arrayIndex = 0, int cellIndex = 0) {
+        this.arrayIndex = arrayIndex;
+        this.cellIndex = cellIndex;
     }
 }
