@@ -1,19 +1,20 @@
 namespace Monopoly; 
 
 public class GamePlay {
-    private readonly Random rand;
     public Field field;
 
     public GamePlay() {
-        rand = new Random();
+    }
+
+    private void RecreateField() {
         field = new Field();
     }
 
-    public int RollDice() {
-        return rand.Next(1, 7);
+    public static int RollDice() {
+        return App.rand.Next(1, 7);
     }
 
-    public bool RollCoin() {
-        return Convert.ToBoolean(rand.Next(0, 2));
+    public static bool RollCoin() {
+        return Convert.ToBoolean(App.rand.Next(0, 2));
     }
 }

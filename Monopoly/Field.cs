@@ -1,11 +1,11 @@
+using Monopoly.Cards;
+
 namespace Monopoly;
 
 public class Field {
     public Enterprise[][] fieldArrays;
     public Industry[] industriesArray;
     public string[] countriesArray;
-
-    private readonly Random random;
 
     // Struct of array #1: |ec01|ec02|bonus|ec02|zrada|ec02|money|ec03|ec03|prison|ec03|ec01|ec01|chance|ei1|ei1|ei2|review|ei2|ei1|ei3|
     // Indexes:            | 0  | 1  |  2  | 3  |  4  | 5  |  6  | 7  | 8  |  9   | 10 | 11 | 12 |  13  |14 |15 |16 |  17  |18 |19 |20 |
@@ -27,6 +27,15 @@ public class Field {
         { 13, "Go out of country chance" },
         { 17, "Review" },
     };
+    
+    public readonly Dictionary<string, int> specialIndexesByCellNames = new Dictionary<string, int>() {
+        { "Bonus", 2 },
+        { "Zrada", 4 },
+        { "Zarplata", 6 },
+        { "Prison", 9 },
+        { "Go out of country chance", 13 },
+        { "Review", 17 },
+    };
 
     private readonly int[][] countryIndustriesIndexes = {
         new[] { 11, 12, 0 },
@@ -44,7 +53,6 @@ public class Field {
     };
 
     public Field() {
-        random = new Random();
         fieldArrays = new Enterprise[countriesAmount][];
         for (int i = 0; i < countriesAmount; i++) {
             fieldArrays[i] = new Enterprise[arrayLength];
@@ -142,7 +150,7 @@ public class Field {
             for (int j = 0; j < arraysAmount; j++) {
                 for (int k = 0; k < enterprisesAmount; k++) {
 
-                    int curPrice = random.Next(startPrice, startPrice + stepPrice);
+                    int curPrice = App.rand.Next(startPrice, startPrice + stepPrice);
                     startPrice += stepPrice;
                     curPrice = curPrice / 10 * 10;
 
@@ -160,12 +168,12 @@ public class Field {
 
     public void PrintAllIndustries() {
         foreach (var industry in industriesArray) {
-            Console.WriteLine("Industry title: " + industry.industryName);
+            Console.WriteLine("Назва індустрії: " + industry.industryName);
             foreach (var pos in industry.enterprisesIndexes) {
                 Enterprise enterprise = fieldArrays[pos.arrayIndex][pos.cellIndex];
                 Console.WriteLine("------------------------------");
-                Console.WriteLine("    Enterprise: " + enterprise.title + "\n    Price to buy: " + enterprise.priceToBuy +
-                                  "\n    Industry: " + enterprise.industry.industryName);
+                Console.WriteLine("    Підприємство: " + enterprise.title + "\n    Ціна для покупки: " + enterprise.priceToBuy +
+                                  "\n    Індустрія: " + enterprise.industry.industryName);
             }
             Console.WriteLine("______________________________________________________________________\n");
         }
@@ -180,7 +188,7 @@ public class Field {
                 Console.Write("    ");
                 Console.WriteLine((cur == null) ? 
                     "<" + specialCellNamesByIndexes[k] + ">" : 
-                    "Enterprise: " + cur.title + "\n    Price to buy: " + cur.priceToBuy + "\n    Industry: " + cur.industry.industryName);
+                    "Підприємство: " + cur.title + "\n    Ціна для покупки: " + cur.priceToBuy + "\n    Індустрія: " + cur.industry.industryName);
             }
             Console.WriteLine("______________________________________________________________________\n");
         }
@@ -203,7 +211,7 @@ public class Field {
         List<int> ans = new List<int>();
         bool[] isUsed = new bool[end - begin];
         do {
-            int curNum = random.Next(begin, end);
+            int curNum = App.rand.Next(begin, end);
             if (isUsed[curNum - begin]) {
                 continue;
             }

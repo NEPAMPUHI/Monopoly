@@ -1,3 +1,5 @@
+using Monopoly.Cards;
+
 namespace Monopoly; 
 
 public class Industry {

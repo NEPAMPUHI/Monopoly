@@ -34,8 +34,8 @@ public class MainMenu {
         Console.WriteLine("*гра з комп'ютером*");
         GamePlay game = new GamePlay();
         for (int i = 0; i < 10; i++) {
-            Console.WriteLine(game.RollDice());
-            Console.WriteLine(game.RollCoin());
+            Console.WriteLine(GamePlay.RollDice());
+            Console.WriteLine(GamePlay.RollCoin());
         }
     }
     internal void PlayWithFriends() {
