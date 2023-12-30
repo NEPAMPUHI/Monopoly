@@ -48,8 +48,8 @@ public class Enterprise : Card {
         get { return textToShow; } 
     }
     
-    public string DoActionIfArrived(Field field, Player player, out bool isNextMoveNeed) {
-        return PayBuyOrStay(field, player, out isNextMoveNeed);
+    public string DoActionIfArrived(Field field, Player player) {
+        return PayBuyOrStay(field, player);
     }
 
     public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
@@ -61,9 +61,7 @@ public class Enterprise : Card {
         return player.nameInGame + " ходить.";
     }
 
-    private string PayBuyOrStay(Field field, Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = false;
-
+    private string PayBuyOrStay(Field field, Player player) {
         if (this.owner == player) {
             return "Яке щастя! У себе вдома " + player.nameInGame + " не зобов'язується платити комусь!";
         }
@@ -108,10 +106,10 @@ public class Enterprise : Card {
 
     public void UpdateTextToShow() {
         textToShow = new[] {
-            "Підприємство: " + title,
-            "Індустрія: " + industry.industryName,
-            (owner == null) ? ("Ціна для покупки: " + priceToBuy) : ("Ціна для сплати: " + currentPriceOthersPay),
-            (owner == null) ? "Власника немає" : "Власник: " + owner.nameInGame
+            title,
+            industry.industryName,
+            priceOthersPayLevel1 + "/" + priceOthersPayLevel2 + "/" + priceOthersPayLevel3,
+            (owner == null) ? "Власника немає" : owner.nameInGame
         };
     }
 }

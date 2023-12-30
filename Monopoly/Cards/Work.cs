@@ -7,16 +7,15 @@ public class Work : Card {
     public string[] TextToPrintInAField {
         get { return new[] { "<РОБОТА>" }; } 
     }
-    public string DoActionIfArrived(Field field, Player player, out bool isNextMoveNeed) {
-        return StartWork(player, out isNextMoveNeed);
+    public string DoActionIfArrived(Field field, Player player) {
+        return StartWork(player);
     }
     
     public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
         return Working(player, out isNextMoveNeed);
     }
     
-    private string StartWork(Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = false;
+    private string StartWork(Player player) {
 
         player.turnsCanContinueWork = 1;
         for (int i = 0; i < player.howManyTimesWorkedFullTerm; i++) {

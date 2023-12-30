@@ -2,7 +2,7 @@ using System.Text;
 namespace Monopoly; 
 
 public class App {
-    public static Random rand = new Random();
+    public static readonly Random rand = new Random();
     private readonly MainMenu inMenu;
 
     public App() {

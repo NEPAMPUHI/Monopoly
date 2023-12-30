@@ -3,7 +3,7 @@ using Monopoly.Cards;
 namespace Monopoly;
 
 public class Field {
-    public Enterprise[][] fieldArrays;
+    public Card[][] fieldArrays;
     public Industry[] industriesArray;
     public string[] countriesArray;
 
@@ -18,22 +18,23 @@ public class Field {
     // Start:              null
     private const int countriesAmount = 2;
     private const int arrayLength = 21;
+    public const int enterOnArrayInAnother = 6;
 
     private readonly Dictionary<int, string> specialCellNamesByIndexes = new Dictionary<int, string>() {
         { 2, "Bonus" },
         { 4, "Zrada" },
-        { 6, "Zarplata" },
+        { 6, "Work" },
         { 9, "Prison" },
-        { 13, "Go out of country chance" },
+        { 13, "ExitChance" },
         { 17, "Review" },
     };
     
     public readonly Dictionary<string, int> specialIndexesByCellNames = new Dictionary<string, int>() {
         { "Bonus", 2 },
         { "Zrada", 4 },
-        { "Zarplata", 6 },
+        { "Work", 6 },
         { "Prison", 9 },
-        { "Go out of country chance", 13 },
+        { "ExitChance", 13 },
         { "Review", 17 },
     };
 
@@ -53,9 +54,9 @@ public class Field {
     };
 
     public Field() {
-        fieldArrays = new Enterprise[countriesAmount][];
+        fieldArrays = new Card[countriesAmount][];
         for (int i = 0; i < countriesAmount; i++) {
-            fieldArrays[i] = new Enterprise[arrayLength];
+            fieldArrays[i] = new Card[arrayLength];
         }
 
         countriesArray = new string[countriesAmount];
@@ -70,8 +71,31 @@ public class Field {
 
         CountryIndustriesFill(nameOfCountryDir, ref curIndustryArrIndex);
         InternationalIndustriesFill(nameOfInterDir, ref curIndustryArrIndex);
+        NonEnterprisesCardFill();
     }
 
+    public Card TakeCardByPlayerPos(Player player) {
+        return fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
+    }
+
+    private void NonEnterprisesCardFill() {
+        foreach (var array in fieldArrays) {
+            for (int i = 0; i < array.Length; i++) {
+                if (specialCellNamesByIndexes.ContainsKey(i)) {
+                    string cellType = specialCellNamesByIndexes[i];
+                    array[i] = cellType switch {
+                        "Bonus" => new Bonus(),
+                        "Zrada" => new Zrada(),
+                        "Work" => new Work(),
+                        "Prison" => new Prison(),
+                        "ExitChance" => new ExitChance(),
+                        "Review" => new Rewiew()
+                    };
+                }
+            }
+        }
+    }
+    
     private void CountryIndustriesFill(string countryDirName, ref int curIndustryArrIndex) {
         string[] countries = Directory.GetDirectories(countryDirName);
         List<int> countryIndexesInFile =
@@ -166,34 +190,6 @@ public class Field {
         }
     }
 
-    public void PrintAllIndustries() {
-        foreach (var industry in industriesArray) {
-            Console.WriteLine("Назва індустрії: " + industry.industryName);
-            foreach (var pos in industry.enterprisesIndexes) {
-                Enterprise enterprise = fieldArrays[pos.arrayIndex][pos.cellIndex];
-                Console.WriteLine("------------------------------");
-                Console.WriteLine("    Підприємство: " + enterprise.title + "\n    Ціна для покупки: " + enterprise.priceToBuy +
-                                  "\n    Індустрія: " + enterprise.industry.industryName);
-            }
-            Console.WriteLine("______________________________________________________________________\n");
-        }
-    }
-    
-    public void PrintAllField() {
-        for (int i = 0; i < fieldArrays.Length; i++) {
-            Console.WriteLine("|" + countriesArray[i] + "|");
-            for (int k = 0; k < fieldArrays[i].Length; k++) {
-                Enterprise cur = fieldArrays[i][k];
-                Console.WriteLine("------------------------------");
-                Console.Write("    ");
-                Console.WriteLine((cur == null) ? 
-                    "<" + specialCellNamesByIndexes[k] + ">" : 
-                    "Підприємство: " + cur.title + "\n    Ціна для покупки: " + cur.priceToBuy + "\n    Індустрія: " + cur.industry.industryName);
-            }
-            Console.WriteLine("______________________________________________________________________\n");
-        }
-    }
-
     private string GetLastWordAfterSlashForDirectories(string fileDirection) {
         return fileDirection.Substring(fileDirection.LastIndexOf("\\") + 1);
     }
@@ -221,4 +217,5 @@ public class Field {
 
         return ans;
     }
+    
 }

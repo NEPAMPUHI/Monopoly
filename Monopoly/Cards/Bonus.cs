@@ -9,8 +9,7 @@ public class Bonus : Card {
         get { return new[] { "<БОНУС>" }; }
     }
     
-    public string DoActionIfArrived(Field field, Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = false;
+    public string DoActionIfArrived(Field field, Player player) {
         return GivePlayerABonus(field, player);
     }
     

@@ -5,8 +5,8 @@ public class Rewiew : Card {
     public string[] TextToPrintInAField {
         get { return new[] { "<ОГЛЯД>" }; } 
     }
-    public string DoActionIfArrived(Field field, Player player, out bool isNextMoveNeed) {
-        return GoToPrisonOrNot(field, player, out isNextMoveNeed);
+    public string DoActionIfArrived(Field field, Player player) {
+        return GoToPrisonOrNot(field, player);
     }
     
     public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
@@ -18,8 +18,7 @@ public class Rewiew : Card {
         return player.nameInGame + " ходить.";
     }
 
-    private string GoToPrisonOrNot(Field field, Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = false;
+    private string GoToPrisonOrNot(Field field, Player player) {
         bool isGoToPrison = GamePlay.RollCoin();
 
         if (!isGoToPrison) {
@@ -29,7 +28,7 @@ public class Rewiew : Card {
         int prisonIndex = field.specialIndexesByCellNames["Prison"];
         player.positionInField.cellIndex = prisonIndex;
         field.fieldArrays[player.positionInField.arrayIndex][prisonIndex]
-            .DoActionIfArrived(field, player, out isNextMoveNeed);
+            .DoActionIfArrived(field, player);
         return player.nameInGame + " не встигає сховати контрабанду та відправляється до тюрми!";
     }
 }

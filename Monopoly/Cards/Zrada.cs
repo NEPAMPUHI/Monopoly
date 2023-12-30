@@ -8,8 +8,7 @@ public class Zrada : Card {
     public string[] TextToPrintInAField {
         get { return new[] { "<ЗРАДА>" }; } 
     }
-    public string DoActionIfArrived(Field field, Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = false;
+    public string DoActionIfArrived(Field field, Player player) {
         return GivePlayerAZrada(field, player);
     }
 

@@ -5,8 +5,8 @@ public class Prison : Card {
     public string[] TextToPrintInAField {
         get { return new[] { "<ТЮРМА>" }; } 
     }
-    public string DoActionIfArrived(Field field, Player player, out bool isNextMoveNeed) {
-        return SendPlayerToPrison(player, out isNextMoveNeed);
+    public string DoActionIfArrived(Field field, Player player) {
+        return SendPlayerToPrison(player);
     }
 
     public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
@@ -31,9 +31,8 @@ public class Prison : Card {
         return msgToReturn;
     }
 
-    private string SendPlayerToPrison(Player player, out bool isNextMoveNeed) {
+    private string SendPlayerToPrison(Player player) {
         int movesToGoOut = CountMovesToGoOut(player);
-        isNextMoveNeed = false;
         
         player.isInPrison = true;
         player.turnsToGoOutOfPrison = movesToGoOut;

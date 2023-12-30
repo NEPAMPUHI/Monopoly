@@ -32,9 +32,9 @@ public class Player {
 
     public List<Enterprise> GetAllPlayerEnterprises(Field field) {
         List<Enterprise> ans = new List<Enterprise>();
-        foreach (var i in field.fieldArrays) {
-            foreach (var enterprise in i) {
-                if (enterprise.owner == this) {
+        foreach (var array in field.fieldArrays) {
+            foreach (var card in array) {
+                if (card is Enterprise enterprise && enterprise.owner == this) {
                     ans.Add(enterprise);
                 }
             }

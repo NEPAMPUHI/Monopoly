@@ -11,10 +11,13 @@ class Program {
         System.Console.InputEncoding = enc1251;
         
         Field field = new Field();
+        Design design = new Design();
         
-        field.PrintAllField();
-        field.PrintAllIndustries();
+        design.PrintAllField(field);
+        design.PrintAllIndustries(field);
         // Uncomment above if you wanna check out field fill (Ctrl+/)
+        
+        Console.WriteLine("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
         
         Console.ReadLine();
         App app = new App();

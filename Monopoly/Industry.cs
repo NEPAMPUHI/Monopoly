@@ -20,7 +20,7 @@ public class Industry {
         List<Enterprise> ans = new List<Enterprise>();
         
         foreach (var pos in enterprisesIndexes) {
-            ans.Add(field.fieldArrays[pos.arrayIndex][pos.cellIndex]);
+            ans.Add(field.fieldArrays[pos.arrayIndex][pos.cellIndex] as Enterprise);
         }
 
         return ans;
