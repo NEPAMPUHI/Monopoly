@@ -37,7 +37,6 @@ public class Zrada : Card {
 
     private int GetActionNumber() {
         int randFrom0To100 = App.rand.Next(100);
-        Console.WriteLine(randFrom0To100);
         int curIndex = -1;
         do {
             curIndex++;
@@ -52,17 +51,16 @@ public class Zrada : Card {
     }
     
     private string Take1000FromAPlayer(Field field, Player player) {
-        player.moneyAmount -= 500;
+        player.moneyAmount -= 1000;
         return player.nameInGame + " втрачає 1000 гривень!";
     }
     
     private string Take2000FromAPlayer(Field field, Player player) {
-        player.moneyAmount -= 500;
+        player.moneyAmount -= 2000;
         return player.nameInGame + " втрачає 2000 гривень!";
     }
     
     private string Take0FromAPlayer(Field field, Player player) {
-        player.moneyAmount -= 500;
         return player.nameInGame + " оминає зраду і нічого не втрачає!";
     }
 }

@@ -22,7 +22,8 @@ public class Work : Card {
             player.turnsCanContinueWork *= 2;
         }
 
-        return player.nameInGame + " отримує стажування на " + player.turnsCanContinueWork + " днів. Початок — завтра.";
+        return player.nameInGame + " отримує стажування на " + player.turnsCanContinueWork + " " +
+               DayEnding(player.turnsCanContinueWork) + ". Початок — завтра.";
     }
 
     private string Working(Player player, out bool isNextMoveNeed) {
@@ -52,9 +53,9 @@ public class Work : Card {
     private int GetPersonChoice(Player player) {
         string? inputStr = null;
 
-        Console.WriteLine("До завершення стажування" + player.nameInGame + " має відробити ще " +
-                          player.turnsCanContinueWork +
-                          " днів. Гравець може відробити день на роботі або завершити стажування та піти далі.");
+        Console.WriteLine("До завершення стажування " + player.nameInGame + " має відробити ще " +
+                          player.turnsCanContinueWork + " " + DayEnding(player.turnsCanContinueWork) +
+                          ". Гравець може відробити день на роботі або завершити стажування та піти далі.");
         Console.WriteLine("Потрібно зробити вибір:");
         Console.WriteLine("  1. Провести ще день на нудній роботі");
         Console.WriteLine("  2. Піти далі досліджувати простори країни");
@@ -66,7 +67,7 @@ public class Work : Card {
 
             Console.Write("Ваш вибір: ");
             inputStr = Console.ReadLine();
-        } while (inputStr is "1" or "2");
+        } while (!(inputStr is "1" or "2"));
 
         return Convert.ToInt32(inputStr);
     }
@@ -74,5 +75,10 @@ public class Work : Card {
     private string HryvnaEnding(int turnsAmount) {
         turnsAmount %= 10;
         return (turnsAmount == 1) ? "гривня" : ((turnsAmount is > 1 or < 5) ? "гривні" : "гривень") ;
+    }
+    
+    private string DayEnding(int turnsAmount) {
+        turnsAmount %= 10;
+        return (turnsAmount == 1) ? "день" : ((turnsAmount is > 1 or < 5) ? "дні" : "днів") ;
     }
 }

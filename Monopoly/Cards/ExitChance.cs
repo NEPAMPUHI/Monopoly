@@ -15,13 +15,14 @@ public class ExitChance : Card {
 
     private string GoOutOrNot(Player player, out bool isNextMoveNeed) {
         isNextMoveNeed = true;
+        bool isGoOut = player.canGoOutOfCountry;
 
         if (!player.canGoOutOfCountry) {
             player.positionInField.cellIndex = -1;
         }
         player.canGoOutOfCountry = false;
         
-        return player.nameInGame + " " + (isNextMoveNeed
+        return player.nameInGame + " " + (isGoOut
             ? "нарешті виходить з країни та зараз ходить"
             : "не виходить з країни і йде далі по колу :(");
     }

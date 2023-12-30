@@ -41,4 +41,23 @@ public class Player {
         }
         return ans;
     }
+
+    public void MakeTurnForPawnedEnter(Field field) {
+        List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
+        foreach (var enterprise in enterprises) {
+            if (enterprise.IsPawned()) {
+                enterprise.turnsToDisappearIfPawned--;
+                if (enterprise.turnsToDisappearIfPawned == 0) {
+                    enterprise.ClearEnterprise();
+                }
+            }
+        }
+    }
+
+    public void FreeAllEnterprises(Field field) { // Tut? ZHOPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+        List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
+        foreach (var enterprise in enterprises) {
+            enterprise.ClearEnterprise();
+        }
+    }
 }

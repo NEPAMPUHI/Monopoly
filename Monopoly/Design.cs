@@ -15,6 +15,14 @@ public class Design { // Максимум в ширину — 186 символі
             Console.WriteLine("______________________________________________________________________\n");
         }
     }
+
+    public void PrintAListOfEnterprises(List<Enterprise> enterprises) {
+        foreach (var enterprise in enterprises) {
+            Console.WriteLine("------------------------------");
+            PrintACell(enterprise);
+        }
+        Console.WriteLine("------------------------------");
+    }
     
     public void PrintAllIndustries(Field field) {
         foreach (var industry in field.industriesArray) {
@@ -33,5 +41,28 @@ public class Design { // Максимум в ширину — 186 символі
             Console.Write("    ");
             Console.WriteLine(cell.TextToPrintInAField[i]);
         }
+    }
+
+    public string PrintCellTitleInAText(Card? card) {
+        return ((card is null) ? 
+            "<СТАРТ>" :
+            (card is Enterprise enterprise)
+            ? enterprise.title + " (" + enterprise.industry.industryName + ")"
+            : card.TextToPrintInAField[0]);
+    }
+
+    public string GetCountryNameByPlayer(Field field, Player player) {
+        string ans;
+        if (player.positionInField == null) {
+            ans = "космосі";
+        }
+        else if (player.positionInField.cellIndex > field.specialIndexesByCellNames["ExitChance"]) {
+            ans = "міжкраїнному просторі";
+        }
+        else {
+            ans = field.countriesArray[player.positionInField.arrayIndex];
+        }
+
+        return ans;
     }
 }

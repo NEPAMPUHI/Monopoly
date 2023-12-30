@@ -17,9 +17,6 @@ class Program {
         design.PrintAllIndustries(field);
         // Uncomment above if you wanna check out field fill (Ctrl+/)
         
-        Console.WriteLine("------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------");
-        
-        Console.ReadLine();
         App app = new App();
         app.Run();
     }

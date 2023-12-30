@@ -74,8 +74,8 @@ public class Field {
         NonEnterprisesCardFill();
     }
 
-    public Card TakeCardByPlayerPos(Player player) {
-        return fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
+    public Card? TakeCardByPlayerPos(Player player) {
+        return player.positionInField == null ? null : fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
     }
 
     private void NonEnterprisesCardFill() {

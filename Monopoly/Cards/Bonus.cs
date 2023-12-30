@@ -38,7 +38,6 @@ public class Bonus : Card {
 
     private int GetActionNumber() {
         int randFrom0To100 = App.rand.Next(100);
-        Console.WriteLine(randFrom0To100);
         int curIndex = -1;
         do {
             curIndex++;

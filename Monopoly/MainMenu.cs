@@ -32,7 +32,7 @@ public class MainMenu {
         }
     }
     private void PlayWithComputer() {
-        Console.WriteLine("*гра з комп'ютером*");
+        Console.WriteLine("\n*гра з комп'ютером*");
         GamePlay game = new GamePlay();
         for (int i = 0; i < 10; i++) {
             Console.WriteLine(GamePlay.RollDice());
@@ -40,7 +40,7 @@ public class MainMenu {
         }
     }
     private void PlayWithFriends() {
-        Console.WriteLine("*гра з друзями*");
+        Console.WriteLine("\n*гра з друзями*");
         string[] playerNames = InputPlayersToPlay();
         ConsoleColor[] playerColors = ChooseColorForEach(playerNames.Length);
         
@@ -60,9 +60,9 @@ public class MainMenu {
 
         string[] previousRes = new string[maxPlayersAmount];
 
-        Console.WriteLine("Ви можете додати від 2 до 4 гравців.");
+        Console.WriteLine("\nВи можете додати від 2 до 4 гравців.");
         while (isContinue) {
-            Console.Write("Введіть 1, якщо хочете додати друга для гри або 0, якщо більше не хочете: ");
+            Console.Write("\nВведіть 1, якщо хочете додати друга для гри або 0, якщо більше не хочете: ");
             
             switch (Console.ReadLine()) {
                 case "1":
@@ -146,13 +146,13 @@ public class MainMenu {
                     isCorrect = false;
                 }
             }
-        } while (isCorrect);
+        } while (!isCorrect);
 
         return name;
     }
     
     private void ChangeSettings() {
-        Console.WriteLine("*відкрилися налаштування*");
+        Console.WriteLine("\n*відкрилися налаштування*");
     }
     
     private void QuitGame(ref bool shouldContinue) {
