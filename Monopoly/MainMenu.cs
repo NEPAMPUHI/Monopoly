@@ -139,6 +139,12 @@ public class MainMenu {
                 isCorrect = false;
                 continue;
             }
+            
+            if (name.Length == 0) {
+                Console.WriteLine("Ваше ім'я навіть під мікроскопом не видно, спробуйте ще");
+                isCorrect = false;
+                continue;
+            }
 
             for (int i = 0; i < playersAmount; i++) {
                 if (name == playerNames[i]) {

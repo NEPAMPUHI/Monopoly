@@ -42,11 +42,36 @@ public class Player {
         return ans;
     }
 
+    public List<Enterprise> GetPawnedOrNotPlayerEnterprises(Field field, bool isPawnedNeed) {
+        List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
+        
+        for (int i = 0; i < enterprises.Count; i++) {
+            Enterprise enterprise = enterprises[i];
+            if (isPawnedNeed != enterprise.IsPawned()) {
+                enterprises.RemoveAt(i);
+                i--;
+            }
+        }
+        return enterprises;
+    }
+    
+    public List<Enterprise> GetFullIndustryWithoutNHotelsEnterprises(Field field) {
+        List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
+        for (int i = 0; i < enterprises.Count; i++) {
+            Enterprise enterprise = enterprises[i];
+            if (!(enterprise.isFullIndustry && !enterprise.isBuiltHotel)) {
+                enterprises.RemoveAt(i);
+                i--;
+            }
+        }
+        return enterprises;
+    }
+
     public void MakeTurnForPawnedEnter(Field field) {
         List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
         foreach (var enterprise in enterprises) {
             if (enterprise.IsPawned()) {
-                enterprise.turnsToDisappearIfPawned--;
+                enterprise.ReduceTurnsAmount();
                 if (enterprise.turnsToDisappearIfPawned == 0) {
                     enterprise.ClearEnterprise();
                 }
@@ -54,7 +79,7 @@ public class Player {
         }
     }
 
-    public void FreeAllEnterprises(Field field) { // Tut? ZHOPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+    public void FreeAllEnterprises(Field field) { // Tut?
         List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
         foreach (var enterprise in enterprises) {
             enterprise.ClearEnterprise();

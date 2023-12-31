@@ -12,6 +12,7 @@ public class Enterprise : Card {
     private const int turnsInGeneralToDisappIfPawned = 5;
 
     public bool isBuiltHotel;
+    public bool isFullIndustry;
     private readonly int priceOthersPayLevel1;
     private readonly int priceOthersPayLevel2;
     private readonly int priceOthersPayLevel3;
@@ -19,8 +20,8 @@ public class Enterprise : Card {
 
     private string[] textToShow;
 
-    public Enterprise(int priceToBuy, Industry industry, string title, Player? owner = null, bool isPawnedInBank = false,
-        int turnsToDisappearIfPawned = 0, bool isBuiltHome = false) {
+    public Enterprise(int priceToBuy, Industry industry, string title, Player? owner = null,
+        int turnsToDisappearIfPawned = 0, bool isBuiltHotel = false, bool isFullIndustry = false) {
         this.owner = owner;
         this.industry = industry;
         this.title = title;
@@ -30,7 +31,8 @@ public class Enterprise : Card {
 
         this.turnsToDisappearIfPawned = turnsToDisappearIfPawned;
 
-        isBuiltHotel = isBuiltHome;
+        this.isBuiltHotel = isBuiltHotel;
+        this.isFullIndustry = isFullIndustry;
         priceOthersPayLevel1 = priceToBuy / 2;
         priceOthersPayLevel2 = priceToBuy;
         priceOthersPayLevel3 = priceToBuy * 2;
@@ -38,7 +40,7 @@ public class Enterprise : Card {
 
         UpdateTextToShow();
     }
-    
+
     public string[] TextToPrintInAField {
         get { return textToShow; } 
     }
@@ -49,6 +51,46 @@ public class Enterprise : Card {
 
     public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
         return JustTurn(field, player, out isNextMoveNeed);
+    }
+    
+    public void PawnInBank() {
+        owner.moneyAmount += currentPriceOthersPay; 
+        Console.WriteLine(title + " закладено у банк. " + owner.nameInGame + " отрмує " + currentPriceOthersPay + " на свій рахунок\n");
+        currentPriceOthersPay = priceOthersPayLevel1;
+        turnsToDisappearIfPawned = turnsInGeneralToDisappIfPawned;
+        UpdateTextToShow();
+    }
+
+    public void UnPawnFromBank(Field field) {
+        owner.moneyAmount -= priceToBuy;
+        Console.WriteLine(title + " викуплено з банку гравцем " + owner.nameInGame + "!\n");
+        turnsToDisappearIfPawned = 0;
+        CollectIndustry(field, owner);
+        UpdateTextToShow();
+    }
+
+    public bool IsPawned() {
+        return turnsToDisappearIfPawned > 0;
+    }
+
+    public void ClearEnterprise() { // Tut?
+        turnsToDisappearIfPawned = 0;
+        currentPriceOthersPay = priceOthersPayLevel1;
+        owner = null;
+        UpdateTextToShow();
+    }
+
+    public void ReduceTurnsAmount() {
+        turnsToDisappearIfPawned--;
+        UpdateTextToShow();
+    }
+
+    public void BuildHomeInEnterprise() {
+        isBuiltHotel = true;
+        currentPriceOthersPay = priceOthersPayLevel3;
+        owner.moneyAmount -= priceToBuildHotel;
+        Console.WriteLine("Тепер " + owner.nameInGame + " може відпочивати у своєму будинку біля " + title + ", якщо буде тут проїздом");
+        UpdateTextToShow();
     }
 
     private string JustTurn(Field field, Player player, out bool isNextMoveNeed) {
@@ -78,9 +120,7 @@ public class Enterprise : Card {
         }
         int playerChoice = GetPersonChoice(player);
         if (playerChoice == 1) {
-            player.moneyAmount -= priceToBuy;
-            this.owner = player;
-            UpdateTextToShow();
+            BuyingCard(field, player);
             return title + " придбано гравцем " + player.nameInGame + "! Вітаємо!";
         }
 
@@ -108,7 +148,7 @@ public class Enterprise : Card {
         return Convert.ToInt32(inputStr);
     }
 
-    public void UpdateTextToShow() {
+    private void UpdateTextToShow() {
         textToShow = new[] {
             title,
             industry.industryName,
@@ -119,24 +159,33 @@ public class Enterprise : Card {
         };
     }
 
-    public void PawnInBank() {
-        this.turnsToDisappearIfPawned = turnsInGeneralToDisappIfPawned;
+    private void BuyingCard(Field field, Player player) {
+        player.moneyAmount -= priceToBuy;
+        this.owner = player;
+
+        CollectIndustry(field, player);
         UpdateTextToShow();
     }
 
-    public bool IsPawned() {
-        return turnsToDisappearIfPawned > 0;
-    }
-
-    public void ClearEnterprise() { // Tut?
-        turnsToDisappearIfPawned = 0;
-        currentPriceOthersPay = priceOthersPayLevel1;
-        owner = null;
+    private void UpdateIfFullIndustry() {
+        currentPriceOthersPay = priceOthersPayLevel2;
+        isFullIndustry = true;
         UpdateTextToShow();
     }
 
-    public void ReduceTurnsAmount() {
-        turnsToDisappearIfPawned--;
-        UpdateTextToShow();
+    private void CollectIndustry(Field field, Player player) {
+        bool isFullIndustryCur = true;
+        foreach (var enterprise in industry.GetEnterprisesInIndustry(field)) {
+            if (enterprise.owner != player) {
+                isFullIndustryCur = false;
+            }
+        }
+
+        if (isFullIndustryCur) {
+            Console.WriteLine(player.nameInGame + " стає локальним монополістом в індустрії " + industry.industryName + "!\n");
+            foreach (var enterprise in industry.GetEnterprisesInIndustry(field)) {
+                enterprise.UpdateIfFullIndustry();
+            }
+        }
     }
 }

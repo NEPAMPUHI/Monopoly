@@ -46,11 +46,7 @@ public class GamePlay {
 
         while (!isGameEnd) {
             curPlayer = playersInGame[curIndexPlayerTurn];
-            
-            curPlayer.MakeTurnForPawnedEnter(field);
-            Console.WriteLine();
-            PrintPlayersInfo(playersInGame);
-            Console.WriteLine();
+            PreTurnThings(curPlayer, playersInGame);
             
             messageToPrint = (curPlayer.positionInField == null)
                 ? StartTurn(curPlayer, out isNextMoveNeed)
@@ -67,16 +63,13 @@ public class GamePlay {
 
             if (IsPlayerGoOut(curPlayer)) {
                 playersInGame.RemoveAt(curIndexPlayerTurn);
+                curIndexPlayerTurn--;
                 if (playersInGame.Count == 1) {
                     isGameEnd = true;
                     Congratulations(playersInGame[0]);
                 }
-                curIndexPlayerTurn = (curIndexPlayerTurn + 1) % (playersInGame.Count + 1);
             }
-            else {
-                curIndexPlayerTurn = (curIndexPlayerTurn + 1) % playersInGame.Count;
-            }
-
+            curIndexPlayerTurn = (curIndexPlayerTurn + 1) % playersInGame.Count;
         }
     }
 
@@ -138,20 +131,13 @@ public class GamePlay {
                           " підприємств і отримаєте стільки, скільки платять інші, коли стають на них" + 
                           " (зможете їх викупити згодом) або програєте");
         
-        List<Enterprise> enterprises = player.GetAllPlayerEnterprises(field);
-        foreach (var enterprise in enterprises) {
-            if (enterprise.IsPawned()) {
-                enterprises.Remove(enterprise);
-            }
-        }
-        
+        List<Enterprise> enterprises = player.GetPawnedOrNotPlayerEnterprises(field, false);
         while (enterprises.Count > 0 && player.moneyAmount < 0) {
             Console.WriteLine("Борг банку складає " + player.moneyAmount * (-1));
             Console.WriteLine("Ваші підприємства на даний момент:");
-            design.PrintAListOfEnterprises(enterprises);
+            design.PrintAListOfEnterprisesInOneLine(enterprises);
             int enterpriseToPawn = GainEnterpriseNum(enterprises.Count) - 1;
 
-            player.moneyAmount += enterprises[enterpriseToPawn].currentPriceOthersPay;
             enterprises[enterpriseToPawn].PawnInBank();
             enterprises.RemoveAt(enterpriseToPawn);
 
@@ -176,10 +162,10 @@ public class GamePlay {
         int num;
         
         do {
-            Console.Write("Введіть номер підприємства для закладання у банк (від 1 до " + enterprisesAmount + "): ");
+            Console.Write("Введіть номер підприємства (від 1 до " + enterprisesAmount + "): ");
             numInStr = Console.ReadLine();
             if (int.TryParse(numInStr, out num)) {
-                if (num < 1 && num > enterprisesAmount) {
+                if (num < 1 || num > enterprisesAmount) {
                     Console.WriteLine("Введіть номер підприємства з діапазону!");
                 }
                 else {
@@ -200,8 +186,113 @@ public class GamePlay {
                               "Знаходиться у " + design.GetCountryNameByPlayer(field, player) +
                               " на клітинці " + design.PrintCellTitleInAText(field.TakeCardByPlayerPos(player)) +
                               ". Його підприємства: ");
-            design.PrintAListOfEnterprises(player.GetAllPlayerEnterprises(field));
+            design.PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
         }
     }
-    
+
+    private void PreTurnThings(Player player, List<Player> playersInGame) {
+        player.MakeTurnForPawnedEnter(field);
+        Console.WriteLine();
+        PrintPlayersInfo(playersInGame);
+        Console.WriteLine();
+        PawnEnterpriseOrBuildHotel(player);
+    }
+    private void PawnEnterpriseOrBuildHotel(Player player) {
+        List<Enterprise> notPawnedEnterprises = player.GetPawnedOrNotPlayerEnterprises(field, false);
+        List<Enterprise> pawnedEnterprises = player.GetPawnedOrNotPlayerEnterprises(field, true);
+        List<Enterprise> enterprisesToBuildHotel = player.GetFullIndustryWithoutNHotelsEnterprises(field);
+        bool isContinue = true;
+
+        Console.WriteLine(player.nameInGame + " може перед ходом " +
+                          "закласти підприємство (" + notPawnedEnterprises.Count + " шт.) у банк, " +
+                          "викупити підприємство (" + pawnedEnterprises.Count + " шт.) з банку, " +
+                          "побудувати готель (" + enterprisesToBuildHotel.Count + " шт.) на підприємстві");
+
+        do {
+            int actionNum = GetNumOfAction();
+            switch (actionNum) {
+                case 1:
+                    if (notPawnedEnterprises.Count == 0) {
+                        Console.WriteLine("На даний момент немає підприємств для закладання у банк");
+                    }
+                    else {
+                        Console.WriteLine("Ваші не закладені у банк підприємства:");
+                        design.PrintAListOfEnterprisesInOneLine(notPawnedEnterprises);
+                        int enterpriseNum = GainEnterpriseNum(notPawnedEnterprises.Count) - 1;
+                        notPawnedEnterprises[enterpriseNum].PawnInBank();
+                        notPawnedEnterprises.RemoveAt(enterpriseNum);
+                    }
+                    break;
+                case 2:
+                    if (pawnedEnterprises.Count == 0) {
+                        Console.WriteLine("На даний момент немає підприємств для викупу з банку");
+                    }
+                    else {
+                        Console.WriteLine("Ваші закладені у банк підприємства:");
+                        design.PrintAListOfEnterprisesInOneLine(pawnedEnterprises);
+                        int enterpriseNum = GainEnterpriseNum(pawnedEnterprises.Count) - 1;
+                        if (player.moneyAmount > pawnedEnterprises[enterpriseNum].priceToBuy) {
+                            pawnedEnterprises[enterpriseNum].UnPawnFromBank(field);
+                            pawnedEnterprises.RemoveAt(enterpriseNum);
+                        }
+                        else {
+                            Console.WriteLine("На жаль, грошей для викупу не вистачає");
+                        }
+                    }
+                    break;
+                case 3:
+                    if (enterprisesToBuildHotel.Count == 0) {
+                        Console.WriteLine("На даний момент немає підприємств для будування готелю там");
+                    }
+                    else {
+                        Console.WriteLine("Ваші підприємства, на яких можна збудувати готель (для побудови необхідно " +
+                                          "в рази більше грошей від покупки підприємства):");
+                        design.PrintAListOfEnterprisesInOneLine(enterprisesToBuildHotel);
+                        int enterpriseNum = GainEnterpriseNum(enterprisesToBuildHotel.Count) - 1;
+                        if (player.moneyAmount > enterprisesToBuildHotel[enterpriseNum].priceToBuildHotel) {
+                            enterprisesToBuildHotel[enterpriseNum].BuildHomeInEnterprise();
+                            enterprisesToBuildHotel.RemoveAt(enterpriseNum);
+                        }
+                        else {
+                            Console.WriteLine("На жаль, грошей для побудови готелю тут не вистачає");
+                        }
+                    }
+                    break;
+                default:
+                    Console.WriteLine();
+                    isContinue = false;
+                    break;
+            }
+        } while (isContinue);
+    }
+
+    private int GetNumOfAction() {
+        Console.WriteLine("\nВведіть");
+        Console.WriteLine("  1, якщо хочете закласти підприємство у банк");
+        Console.WriteLine("  2, якщо хочете викупити підприємство з банку");
+        Console.WriteLine("  3, якщо хочете побудувати готель на підприємстві");
+        Console.WriteLine("  0, якщо поки що нічого не хочете");
+        
+        bool isCorrect = false;
+        string numInStr;
+        int num;
+        
+        do {
+            Console.Write("Ваша відповідь: ");
+            numInStr = Console.ReadLine();
+            if (int.TryParse(numInStr, out num)) {
+                if (num is < 0 or > 3) {
+                    Console.WriteLine("Введіть коректний номер!");
+                }
+                else {
+                    isCorrect = true;
+                }
+            }
+            else {
+                Console.WriteLine("Введіть число!");
+            }
+        } while (!isCorrect);
+
+        return num;
+    }
 }

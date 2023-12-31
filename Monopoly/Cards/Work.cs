@@ -42,6 +42,7 @@ public class Work : Card {
             int randSalary = App.rand.Next(50, 251);
             randSalary /= 10;
             randSalary *= 10;
+            player.moneyAmount += randSalary;
             return "Гарна робота! Роботодавець заплатив " + randSalary + " гривень за день роботи";
         }
         

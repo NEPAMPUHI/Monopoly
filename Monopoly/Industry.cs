@@ -16,7 +16,7 @@ public class Industry {
         this.isFull = isFull;
     }
 
-    List<Enterprise> GetEnterprisesInIndustry(Field field) {
+    public List<Enterprise> GetEnterprisesInIndustry(Field field) {
         List<Enterprise> ans = new List<Enterprise>();
         
         foreach (var pos in enterprisesIndexes) {

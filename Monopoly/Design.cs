@@ -3,7 +3,8 @@ using Monopoly.Cards;
 namespace Monopoly; 
 
 public class Design { // Максимум в ширину — 186 символів
-    
+    private const int maxCellsInOneLine = 8;
+    private const int maxSymbolsInOneCell = 16;
     public void PrintAllField(Field field) {
         for (int i = 0; i < field.fieldArrays.Length; i++) {
             Console.WriteLine("|" + field.countriesArray[i] + "|");
@@ -16,12 +17,31 @@ public class Design { // Максимум в ширину — 186 символі
         }
     }
 
-    public void PrintAListOfEnterprises(List<Enterprise> enterprises) {
-        foreach (var enterprise in enterprises) {
-            Console.WriteLine("------------------------------");
-            PrintACell(enterprise);
+    public void PrintAListOfEnterprisesInOneLine(List<Enterprise> enterprises) {
+        string[][] enterprisesInLines = new string[enterprises.Count][];
+        int curBoard;
+        
+        for (int i = 0; i < enterprisesInLines.Length; i++) {
+            enterprisesInLines[i] = enterprises[i].TextToPrintInAField;
         }
-        Console.WriteLine("------------------------------");
+
+        for (int i = 0; i < enterprisesInLines.Length; i += maxCellsInOneLine) {
+            curBoard = Math.Min(enterprisesInLines.Length - i, maxCellsInOneLine);
+            Console.WriteLine(CurWideLine(Math.Min(curBoard, maxCellsInOneLine), false));
+            for (int h = 0; h < enterprisesInLines[0].Length; h++) {
+                for (int k = i; k < curBoard; k++) {
+                    int freeSpace = maxSymbolsInOneCell - enterprisesInLines[k][h].Length;
+                    Console.Write("| ");
+                    Console.Write(new string (' ', freeSpace / 2));
+                    Console.Write(enterprisesInLines[k][h]);
+                    Console.Write(new string (' ', freeSpace - freeSpace / 2));
+                    Console.Write(" | ");
+                }
+                Console.Write("\n");
+            }
+            Console.WriteLine(CurWideLine(Math.Min(curBoard, maxCellsInOneLine), true));
+            Console.WriteLine();
+        }
     }
     
     public void PrintAllIndustries(Field field) {
@@ -64,5 +84,23 @@ public class Design { // Максимум в ширину — 186 символі
         }
 
         return ans;
+    }
+
+    private string CurWideLine(int curEnterprisesAmount, bool withSideBoards) {
+        string strToReturn = "";
+        string strToDuplicate = "";
+
+        strToDuplicate += withSideBoards ? '|' : ' ';
+        for (int i = 0; i < maxSymbolsInOneCell + 2; i++) {
+            strToDuplicate += '_';
+        }
+        strToDuplicate += withSideBoards ? '|' : ' ';
+        strToDuplicate += ' ';
+
+        for (int i = 0; i < curEnterprisesAmount; i++) {
+            strToReturn += strToDuplicate;
+        }
+
+        return strToReturn;
     }
 }
