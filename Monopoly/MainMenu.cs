@@ -11,19 +11,18 @@ public class MainMenu {
                           "3. Налаштування\n" +
                           "4. Вихід з гри");
     }
-    internal void ChooseAction(ref bool shouldContinue) {
-        Console.Write("Введіть номер команди: ");
-        switch (Console.ReadLine()) {
-            case "1":
+    internal void PerformAction(ref bool shouldContinue) { 
+        switch (ChooseNumAction()) {
+            case 1:
                 PlayWithComputer();
                 break;
-            case "2":
+            case 2:
                 PlayWithFriends();
                 break;
-            case "3":
+            case 3:
                 ChangeSettings();
                 break;
-            case "4":
+            case 4:
                 QuitGame(ref shouldContinue);
                 break;
             default:
@@ -164,5 +163,34 @@ public class MainMenu {
     private void QuitGame(ref bool shouldContinue) {
         shouldContinue = false;
         Console.WriteLine("Сподіваємось, ви гарно провели час! Бувайте!");
+    }
+
+    private int ChooseNumAction() {
+        bool isCorrect = false;
+        string numInStr;
+        int num;
+
+        do
+        {
+            Console.Write("Ваша відповідь: ");
+            numInStr = Console.ReadLine();
+            if (int.TryParse(numInStr, out num))
+            {
+                if (num is < 1 or > 4)
+                {
+                    Console.WriteLine("Введіть коректний номер!");
+                }
+                else
+                {
+                    isCorrect = true;
+                }
+            }
+            else
+            {
+                Console.WriteLine("Введіть число!");
+            }
+        } while (!isCorrect);
+
+        return num;
     }
 }

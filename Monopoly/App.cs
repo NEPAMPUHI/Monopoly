@@ -12,7 +12,7 @@ public class App {
         var shouldContinue = true;
         while (shouldContinue) {
             inMenu.DisplayMenu();
-            inMenu.ChooseAction(ref shouldContinue);
+            inMenu.PerformAction(ref shouldContinue);
         }
     }
 }

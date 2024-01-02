@@ -4,7 +4,7 @@ namespace Monopoly;
 
 public class GamePlay {
     private Field field;
-    private Design design;
+    private JustOutput design;
     private readonly int indexOfEndOfCountry;
     private readonly int indexOfEndOfArray;
     private readonly int indexOfWorkCell;
@@ -16,7 +16,7 @@ public class GamePlay {
 
     public GamePlay() {
         RecreateField();
-        design = new Design();
+        design = new JustOutput();
         indexOfEndOfCountry = field.specialIndexesByCellNames["ExitChance"];
         indexOfEndOfArray = field.fieldArrays[0].Length - 1;
         indexOfWorkCell = field.specialIndexesByCellNames["Work"];
@@ -119,8 +119,14 @@ public class GamePlay {
     }
 
     private void Congratulations(Player player) {
+        Console.WriteLine();
+        Console.WriteLine("------------------------------------------------------------------------------------------------------------------");
         Console.WriteLine("Вітаємо гравця " + player.nameInGame + " з абсолютною монополією та банком у розмірі " +
                           player.moneyAmount + " гривень!");
+        Console.WriteLine("А також, наступними підприємствами:");
+        design.PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
+        Console.WriteLine("------------------------------------------------------------------------------------------------------------------");
+        Console.WriteLine();
     }
     private bool IsPlayerGoOut(Player player) {
         if (player.moneyAmount >= 0) {
@@ -138,7 +144,7 @@ public class GamePlay {
             design.PrintAListOfEnterprisesInOneLine(enterprises);
             int enterpriseToPawn = GainEnterpriseNum(enterprises.Count) - 1;
 
-            enterprises[enterpriseToPawn].PawnInBank();
+            enterprises[enterpriseToPawn].PawnInBank(field);
             enterprises.RemoveAt(enterpriseToPawn);
 
             if (player.moneyAmount < 0) {
@@ -146,7 +152,7 @@ public class GamePlay {
             }
         }
 
-        if (player.moneyAmount > 0) {
+        if (player.moneyAmount >= 0) {
             Console.WriteLine("Борг вдалося погасити! Ви ще у грі!");
             return false;
         }
@@ -219,7 +225,7 @@ public class GamePlay {
                         Console.WriteLine("Ваші не закладені у банк підприємства:");
                         design.PrintAListOfEnterprisesInOneLine(notPawnedEnterprises);
                         int enterpriseNum = GainEnterpriseNum(notPawnedEnterprises.Count) - 1;
-                        notPawnedEnterprises[enterpriseNum].PawnInBank();
+                        notPawnedEnterprises[enterpriseNum].PawnInBank(field);
                         notPawnedEnterprises.RemoveAt(enterpriseNum);
                     }
                     break;

@@ -3,10 +3,10 @@ namespace Monopoly.Cards;
 public class Bonus : Card {
     private delegate string Action(Field field, Player player);
     
-    private readonly int[] probability = { 20, 20, 10, 50 };
+    private readonly int[] probability = { 50, 20, 10, 20 };
     
     public string[] TextToPrintInAField {
-        get { return new[] { "<БОНУС>" }; }
+        get { return new[] { "БОНУС" }; }
     }
     
     public string DoActionIfArrived(Field field, Player player) {
@@ -14,12 +14,7 @@ public class Bonus : Card {
     }
     
     public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
-        return JustTurn(field, player, out isNextMoveNeed);
-    }
-
-    private string JustTurn(Field field, Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = true;
-        return player.nameInGame + " ходить.";
+        return Card.JustTurn(field, player, out isNextMoveNeed);
     }
 
     private string GivePlayerABonus(Field field, Player player) {

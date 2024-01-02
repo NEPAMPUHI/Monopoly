@@ -1,3 +1,5 @@
+using System.Numerics;
+
 namespace Monopoly.Cards; 
 
 public class Enterprise : Card {
@@ -53,9 +55,10 @@ public class Enterprise : Card {
         return JustTurn(field, player, out isNextMoveNeed);
     }
     
-    public void PawnInBank() {
-        owner.moneyAmount += currentPriceOthersPay; 
-        Console.WriteLine(title + " закладено у банк. " + owner.nameInGame + " отрмує " + currentPriceOthersPay + " на свій рахунок\n");
+    public void PawnInBank(Field field) {
+        owner.moneyAmount += currentPriceOthersPay;
+        JustOutput.OutPawnInBank(this);
+        CollectOrDestroyIndustry(field, owner, false);
         currentPriceOthersPay = priceOthersPayLevel1;
         turnsToDisappearIfPawned = turnsInGeneralToDisappIfPawned;
         UpdateTextToShow();
@@ -63,9 +66,9 @@ public class Enterprise : Card {
 
     public void UnPawnFromBank(Field field) {
         owner.moneyAmount -= priceToBuy;
-        Console.WriteLine(title + " викуплено з банку гравцем " + owner.nameInGame + "!\n");
+        JustOutput.OutUnPawnFromBank(this);
         turnsToDisappearIfPawned = 0;
-        CollectIndustry(field, owner);
+        CollectOrDestroyIndustry(field, owner, true);
         UpdateTextToShow();
     }
 
@@ -74,9 +77,11 @@ public class Enterprise : Card {
     }
 
     public void ClearEnterprise() { // Tut?
-        turnsToDisappearIfPawned = 0;
-        currentPriceOthersPay = priceOthersPayLevel1;
         owner = null;
+        turnsToDisappearIfPawned = 0;
+        isBuiltHotel = false;
+        isFullIndustry = false;
+        currentPriceOthersPay = priceOthersPayLevel1;
         UpdateTextToShow();
     }
 
@@ -106,6 +111,10 @@ public class Enterprise : Card {
         if (this.owner != null) {
             if (IsPawned()) {
                 return player.nameInGame + " щастить, так як картка на даний момент закладена у банк";
+            }
+            else if (owner.IsInPrison())
+            {
+                return player.nameInGame + " щастить, власник картки зараз у тюрмі";
             }
             else {
                 player.moneyAmount -= currentPriceOthersPay;
@@ -163,7 +172,7 @@ public class Enterprise : Card {
         player.moneyAmount -= priceToBuy;
         this.owner = player;
 
-        CollectIndustry(field, player);
+        CollectOrDestroyIndustry(field, player, true);
         UpdateTextToShow();
     }
 
@@ -172,19 +181,35 @@ public class Enterprise : Card {
         isFullIndustry = true;
         UpdateTextToShow();
     }
+    private void UpdateIfDestroyedIndustry() {
+        currentPriceOthersPay = priceOthersPayLevel1;
+        isBuiltHotel = false;
+        isFullIndustry = false;
+        UpdateTextToShow();
+    }
 
-    private void CollectIndustry(Field field, Player player) {
+    private void CollectOrDestroyIndustry(Field field, Player player, bool isToCollect) {
         bool isFullIndustryCur = true;
         foreach (var enterprise in industry.GetEnterprisesInIndustry(field)) {
-            if (enterprise.owner != player) {
+            if (enterprise.owner != player || enterprise.IsPawned()) {
                 isFullIndustryCur = false;
             }
         }
 
         if (isFullIndustryCur) {
-            Console.WriteLine(player.nameInGame + " стає локальним монополістом в індустрії " + industry.industryName + "!\n");
+            if (isToCollect) {
+                Console.WriteLine(player.nameInGame + " стає локальним монополістом в індустрії " + industry.industryName + "!\n");
+            }
+            else {
+                Console.WriteLine(player.nameInGame + " втрачає локальну монополію в індустрії " + industry.industryName + "\n");
+            }
             foreach (var enterprise in industry.GetEnterprisesInIndustry(field)) {
-                enterprise.UpdateIfFullIndustry();
+                if (isToCollect) {
+                    enterprise.UpdateIfFullIndustry();
+                }
+                else {
+                    enterprise.UpdateIfDestroyedIndustry();
+                }
             }
         }
     }

@@ -7,27 +7,25 @@ public class Player {
     public readonly ConsoleColor chipColor;
     public int moneyAmount;
     public Position? positionInField;
-    public bool isInPrison;
     public int turnsToGoOutOfPrison;
-    public int howManyTimesWasInPrison;
+    public int howManyTimesPayedInPrison;
     public bool canGoOutOfCountry;
     public int turnsCanContinueWork;
-    public int howManyTimesWorkedFullTerm;
+    public int howManyTimesWorked;
 
     public Player(string nameInGame,
         ConsoleColor chipColor = ConsoleColor.White, int moneyAmount = 0, Position? positionInField = null,
-        bool isInPrison = false, int turnsToGoOutOfPrison = 0, int howManyTimesWasInPrison = 0,
-        bool canGoOutOfCountry = false, int turnsCanContinueWork = 0, int howManyTimesWorkedFullTerm = 0) {
+        int turnsToGoOutOfPrison = 0, int howManyTimesPayedInPrison = 0,
+        bool canGoOutOfCountry = false, int turnsCanContinueWork = 0, int howManyTimesWorked = 0) {
         this.nameInGame = nameInGame;
         this.moneyAmount = moneyAmount;
         this.positionInField = positionInField;
         this.chipColor = chipColor;
-        this.isInPrison = isInPrison;
         this.turnsToGoOutOfPrison = turnsToGoOutOfPrison;
-        this.howManyTimesWasInPrison = howManyTimesWasInPrison;
+        this.howManyTimesPayedInPrison = howManyTimesPayedInPrison;
         this.canGoOutOfCountry = canGoOutOfCountry;
         this.turnsCanContinueWork = turnsCanContinueWork;
-        this.howManyTimesWorkedFullTerm = howManyTimesWorkedFullTerm;
+        this.howManyTimesWorked = howManyTimesWorked;
     }
 
     public List<Enterprise> GetAllPlayerEnterprises(Field field) {
@@ -84,5 +82,9 @@ public class Player {
         foreach (var enterprise in enterprises) {
             enterprise.ClearEnterprise();
         }
+    }
+
+    public bool IsInPrison() {
+        return turnsToGoOutOfPrison != 0;
     }
 }
