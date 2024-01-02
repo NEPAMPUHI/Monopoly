@@ -1,3 +1,5 @@
+using Monopoly.OutputDesign;
+
 namespace Monopoly.Cards; 
 
 public class Prison : Card {
@@ -7,39 +9,36 @@ public class Prison : Card {
     private const int additionPriceForEachTurn = 100;
 
 
-    public string[] TextToPrintInAField {
-        get { return new[] { "<ТЮРМА>" }; } 
+    public override string[] TextToPrintInAField {
+        get { return OutputPhrases.outputTextByTags["Prison"]; }
     }
-    public string DoActionIfArrived(Field field, Player player) {
+    public override string DoActionIfArrived(Field field, Player player) {
         return SendPlayerToPrison(player);
     }
 
-    public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
+    public override string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
         return CanPlayerGoOut(player, out isNextMoveNeed);
     }
 
     public bool IsPayedForFreedom(Player player, int turnsToGoOut) {
         int priceToPay = (startPriceToPay + turnsToGoOut * additionPriceForEachTurn) * (player.howManyTimesPayedInPrison + 1);
 
-        Console.WriteLine("До вас підійшов охоронець та запропонував витягнути з тюрми за " + priceToPay + " гривень");
-        Console.WriteLine("Зробіть вибір:");
-        Console.WriteLine("  1. Дати хабар та вийти з тюрми");
-        Console.WriteLine("  2. Зберегти гроші ті сидіти в тюрмі далі");
+        JustOutput.PrintText(OutputPhrases.TextIsPayedForFreedom(priceToPay));
+        string choice = Interactive.GetPersonChoice(new List<string>() { "1", "2" });
 
-        int choice = GetChoice();
-        if (choice == 1) {
+        if (choice == "1") {
             if (player.moneyAmount >= priceToPay) {
                 player.howManyTimesPayedInPrison++;
                 player.moneyAmount -= priceToPay;
                 return true;
             }
             else {
-                Console.WriteLine("На жаль, грошей виявилося недостатньо");
+                JustOutput.PrintText(OutputPhrases.TextBuyFreedomOrNot(player, false));
                 return false;
             }
         }
         else {
-            Console.WriteLine(player.nameInGame + " вирішив продовжувати відбувати покарання");
+            JustOutput.PrintText(OutputPhrases.TextGoOutOfPrisonOrNot(player, false));
             return false;
         }
     }
@@ -51,17 +50,17 @@ public class Prison : Card {
         player.turnsToGoOutOfPrison--;
         int turnsLeft = player.turnsToGoOutOfPrison;
         if (turnsLeft == 0) {
-            msgToReturn = player.nameInGame + " нарешті виходить із тюрми!";
+            msgToReturn = OutputPhrases.TextGoOutOfPrisonOrNot(player, true);
             isNextMoveNeed = true;
         }
         else {
             if (IsPayedForFreedom(player, turnsLeft)) {
                 player.turnsToGoOutOfPrison = 0;
-                msgToReturn = player.nameInGame + " нарешті виходить із тюрми!";
+                msgToReturn = OutputPhrases.TextBuyFreedomOrNot(player, true);
                 isNextMoveNeed = true;
             }
             else {
-                msgToReturn = player.nameInGame + " залишилося відсидіти ще " + turnsLeft + " " + TurnEnding(turnsLeft);
+                msgToReturn = OutputPhrases.TextTurnsRemaining(player, player.turnsToGoOutOfPrison);
             }
         }
 
@@ -70,26 +69,6 @@ public class Prison : Card {
 
     private string SendPlayerToPrison(Player player) {
         player.turnsToGoOutOfPrison = startTurnsToGoOut;
-
-        return player.nameInGame + " потрапляє до в'язниці на " + startTurnsToGoOut + " " + TurnEnding(startTurnsToGoOut);
-    }
-
-    private string TurnEnding(int turnsAmount) {
-        turnsAmount %= 10;
-        return (turnsAmount == 1) ? "хід" : ((turnsAmount is > 1 and < 5) ? "ходи" : "ходів") ;
-    }
-
-    private int GetChoice() {
-        string? inputStr = null;
-        do {
-            if (inputStr != null) {
-                Console.WriteLine("Спробуйте ще раз.");
-            }
-
-            Console.Write("Ваш вибір: ");
-            inputStr = Console.ReadLine();
-        } while (!(inputStr is "1" or "2"));
-
-        return Convert.ToInt32(inputStr);
+        return OutputPhrases.TextSendPlayerToPrison(player, startTurnsToGoOut);
     }
 }

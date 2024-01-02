@@ -1,15 +1,16 @@
-namespace Monopoly.Cards; 
+namespace Monopoly.Cards;
+using Monopoly.OutputDesign;
 
 public class ExitChance : Card {
-    
-    public string[] TextToPrintInAField {
-        get { return new[] { "<ШАНС ВИХОДУ>" }; } 
+
+    public override string[] TextToPrintInAField {
+        get { return OutputPhrases.outputTextByTags["ExitChance"]; } 
     }
-    public string DoActionIfArrived(Field field, Player player) {
+    public override string DoActionIfArrived(Field field, Player player) {
         return GuessIsGoOut(player);
     }
-    
-    public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
+
+    public override string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
         return GoOutOrNot(player, out isNextMoveNeed);
     }
 
@@ -22,14 +23,12 @@ public class ExitChance : Card {
         }
         player.canGoOutOfCountry = false;
         
-        return player.nameInGame + " " + (isGoOut
-            ? "нарешті виходить з країни та зараз ходить"
-            : "не виходить з країни і йде далі по колу :(");
+        return OutputPhrases.TextGoOutOrNot(player, isGoOut);
     }
 
     private string GuessIsGoOut(Player player) {
         bool isGoOut = GamePlay.RollCoin();
         player.canGoOutOfCountry = isGoOut;
-        return "Вийде " + player.nameInGame + " з країни чи ні — пока що загадка.";
+        return OutputPhrases.TextGuessIsGoOut(player);
     }
 }

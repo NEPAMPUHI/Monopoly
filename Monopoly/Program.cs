@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Monopoly;
 using Monopoly.Cards;
+using Monopoly.OutputDesign;
 
 class Program {
     static void Main(string[] args) {
@@ -11,10 +12,9 @@ class Program {
         System.Console.InputEncoding = enc1251;
         
         Field field = new Field();
-        JustOutput design = new JustOutput();
-        
-        design.PrintAllField(field);
-        design.PrintAllIndustries(field);
+
+        JustOutput.PrintAllField(field);
+        JustOutput.PrintAllIndustries(field);
         // Uncomment above if you wanna check out field fill (Ctrl+/)
         App app = new App();
         app.Run();

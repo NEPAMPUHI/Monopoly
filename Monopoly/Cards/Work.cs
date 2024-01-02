@@ -1,17 +1,18 @@
 using System.Net.NetworkInformation;
+using Monopoly.OutputDesign;
 
-namespace Monopoly.Cards; 
+namespace Monopoly.Cards;
 
 public class Work : Card {
     private const int startWorkingTerm = 3;
-    public string[] TextToPrintInAField {
-        get { return new[] { "<РОБОТА>" }; } 
+    public override string[] TextToPrintInAField {
+        get { return OutputPhrases.outputTextByTags["Work"]; }
     }
-    public string DoActionIfArrived(Field field, Player player) {
+    public override string DoActionIfArrived(Field field, Player player) {
         return StartWork(player);
     }
-    
-    public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
+
+    public override string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
         return Working(player, out isNextMoveNeed);
     }
     
@@ -19,11 +20,10 @@ public class Work : Card {
         player.turnsCanContinueWork = startWorkingTerm - player.howManyTimesWorked;
 
         if (player.turnsCanContinueWork == 0) {
-            return player.nameInGame + " зробив уже всі завдання на роботі. Роботодавець не може дати роботу гравцю";
+            return OutputPhrases.TextStartWork(player, false);
         }
         else {
-            return player.nameInGame + " отримує роботу на " + player.turnsCanContinueWork + " " +
-                   DayEnding(player.turnsCanContinueWork) + ". Початок — завтра.";
+            return OutputPhrases.TextStartWork(player, true);
         }
     }
 
@@ -33,11 +33,10 @@ public class Work : Card {
             if (player.howManyTimesWorked < startWorkingTerm) {
                 player.howManyTimesWorked++;
             }
-            return player.nameInGame +
-                   " відробляє повний термін на даний момент. Гравець може зробити хід далі";
+            return OutputPhrases.TextFinishWorking(player, true);
         }
-
-        JustOutput.OutWorkChoice(player);
+        
+        JustOutput.PrintText(OutputPhrases.TextWorkChoice(player));
         string personChoice = Interactive.GetPersonChoice(new List<string>() { "1", "2"});
         if (personChoice == "1") {
             isNextMoveNeed = false;
@@ -47,7 +46,7 @@ public class Work : Card {
             randSalary /= 10;
             randSalary *= 10;
             player.moneyAmount += randSalary;
-            return "Гарна робота! Роботодавець заплатив " + randSalary + " гривень за день роботи";
+            return OutputPhrases.TextBossPayed(randSalary);
         }
         
         isNextMoveNeed = true;
@@ -55,6 +54,6 @@ public class Work : Card {
         if (player.howManyTimesWorked < startWorkingTerm) {
             player.howManyTimesWorked++;
         }
-        return player.nameInGame + " покидає роботу та може зробити хід далі, назустріч мрії";
+        return OutputPhrases.TextFinishWorking(player, false);
     }
 }

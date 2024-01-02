@@ -1,31 +1,28 @@
 using Monopoly.Cards;
+using Monopoly.OutputDesign;
+using System.Collections.Generic;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace Monopoly; 
+namespace Monopoly;
 
 public class GamePlay {
     private Field field;
-    private JustOutput design;
     private readonly int indexOfEndOfCountry;
     private readonly int indexOfEndOfArray;
     private readonly int indexOfWorkCell;
     private readonly int enterOnArrayInAnother;
     private readonly int enterTnArrayAfterStart;
 
-    private const int zarplata = 500;
+    private const int salary = 500;
     private const int startCapital = 1000;
 
     public GamePlay() {
-        RecreateField();
-        design = new JustOutput();
+        field = new Field();
         indexOfEndOfCountry = field.specialIndexesByCellNames["ExitChance"];
         indexOfEndOfArray = field.fieldArrays[0].Length - 1;
         indexOfWorkCell = field.specialIndexesByCellNames["Work"];
         enterOnArrayInAnother = indexOfWorkCell;
         enterTnArrayAfterStart = field.specialIndexesByCellNames["Bonus"] + 1;
-    }
-
-    private void RecreateField() {
-        field = new Field();
     }
 
     public static int RollDice() {
@@ -51,14 +48,13 @@ public class GamePlay {
             messageToPrint = (curPlayer.positionInField == null)
                 ? StartTurn(curPlayer, out isNextMoveNeed)
                 : field.TakeCardByPlayerPos(curPlayer).DoActionIfStayed(field, curPlayer, out isNextMoveNeed);
-            Console.WriteLine(messageToPrint);
+            JustOutput.PrintText(messageToPrint);
 
             if (isNextMoveNeed) {
                 PlayerTurnWithDice(curPlayer);
-                Card curCard = field.TakeCardByPlayerPos(curPlayer);
-                Console.WriteLine(curPlayer.nameInGame + " переміщується на " + design.PrintCellTitleInAText(curCard) + "\n");
+                JustOutput.PrintText(OutputPhrases.PlayerMovedTo(curPlayer, field));
                 messageToPrint = field.TakeCardByPlayerPos(curPlayer).DoActionIfArrived(field, curPlayer);
-                Console.WriteLine(messageToPrint);
+                JustOutput.PrintText(messageToPrint);
             }
 
             if (IsPlayerGoOut(curPlayer)) {
@@ -66,7 +62,7 @@ public class GamePlay {
                 curIndexPlayerTurn--;
                 if (playersInGame.Count == 1) {
                     isGameEnd = true;
-                    Congratulations(playersInGame[0]);
+                    JustOutput.Congratulations(playersInGame[0], field);
                 }
             }
             curIndexPlayerTurn = (curIndexPlayerTurn + 1) % playersInGame.Count;
@@ -81,24 +77,23 @@ public class GamePlay {
         int countryIndex = Convert.ToInt32(RollCoin());
         player.positionInField.arrayIndex = countryIndex;
         player.moneyAmount += startCapital;
-        return player.nameInGame + " випадає доля йти в країну " + field.countriesArray[countryIndex] +
-               ". Видано стартові " + startCapital + " гривень на підняття економіки країни";
+        return OutputPhrases.TextStartTurn(player, field, startCapital);
     }
 
     private void PlayerTurnWithDice(Player player) {
         int curPlayerArr = player.positionInField.arrayIndex;
         int curPlayerCell = player.positionInField.cellIndex;
         
-        Console.Write(player.nameInGame + ", натисніть Enter щоб підкинути кубик");
-        Console.ReadLine();
+        JustOutput.PrintText(OutputPhrases.TextRollDice(player));
+        Interactive.PressEnter();
         int randTurnsAmount = RollDice();
-        Console.WriteLine("Випадає число " + randTurnsAmount + "!\n");
+        JustOutput.PrintText(OutputPhrases.TextDiceNumber(randTurnsAmount));
 
         int newPlayerCell = curPlayerCell + randTurnsAmount;
-
+        
         if (curPlayerCell < indexOfWorkCell && newPlayerCell >= indexOfWorkCell) {
-            Console.WriteLine(player.nameInGame + " забігає швиденько на роботу, отримує премію в розмірі " + zarplata + " гривень");
-            player.moneyAmount += zarplata;
+            JustOutput.PrintText(OutputPhrases.TextGainSalary(player, salary));
+            player.moneyAmount += salary;
         }
         
         if (curPlayerCell == indexOfEndOfCountry) {
@@ -118,89 +113,40 @@ public class GamePlay {
         }
     }
 
-    private void Congratulations(Player player) {
-        Console.WriteLine();
-        Console.WriteLine("------------------------------------------------------------------------------------------------------------------");
-        Console.WriteLine("Вітаємо гравця " + player.nameInGame + " з абсолютною монополією та банком у розмірі " +
-                          player.moneyAmount + " гривень!");
-        Console.WriteLine("А також, наступними підприємствами:");
-        design.PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
-        Console.WriteLine("------------------------------------------------------------------------------------------------------------------");
-        Console.WriteLine();
-    }
     private bool IsPlayerGoOut(Player player) {
         if (player.moneyAmount >= 0) {
             return false;
         }
-
-        Console.WriteLine("У вас не вистачає грошей для продовження гри. Ви маєте закласти у банк якісь зі своїх" +
-                          " підприємств і отримаєте стільки, скільки платять інші, коли стають на них" + 
-                          " (зможете їх викупити згодом) або програєте");
+        JustOutput.PrintText(OutputPhrases.TextYouMustPawnEnterprises());
         
         List<Enterprise> enterprises = player.GetPawnedOrNotPlayerEnterprises(field, false);
         while (enterprises.Count > 0 && player.moneyAmount < 0) {
-            Console.WriteLine("Борг банку складає " + player.moneyAmount * (-1));
-            Console.WriteLine("Ваші підприємства на даний момент:");
-            design.PrintAListOfEnterprisesInOneLine(enterprises);
-            int enterpriseToPawn = GainEnterpriseNum(enterprises.Count) - 1;
+            JustOutput.PrintDebtAndUnPawnEnterprises(player, enterprises);
+
+            JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(enterprises.Count));
+            int enterpriseToPawn = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprises.Count))) - 1;
 
             enterprises[enterpriseToPawn].PawnInBank(field);
             enterprises.RemoveAt(enterpriseToPawn);
 
             if (player.moneyAmount < 0) {
-                Console.WriteLine("Грошей для погашення боргу не вистачило\n");
+                JustOutput.PrintText(OutputPhrases.TextPawnToNotLost(player, "noEnough"));
             }
         }
 
         if (player.moneyAmount >= 0) {
-            Console.WriteLine("Борг вдалося погасити! Ви ще у грі!");
+            JustOutput.PrintText(OutputPhrases.TextPawnToNotLost(player, "backInGame"));
             return false;
         }
-        
-        Console.WriteLine("На жаль, підприємства скінчилися, а борг не погашено. " + player.nameInGame + " вибуває з гри");
+
+        JustOutput.PrintText(OutputPhrases.TextPawnToNotLost(player, "lost"));
         player.FreeAllEnterprises(field); // Tut.
         return true;
     }
 
-    private int GainEnterpriseNum(int enterprisesAmount) {
-        bool isCorrect = false;
-        string numInStr;
-        int num;
-        
-        do {
-            Console.Write("Введіть номер підприємства (від 1 до " + enterprisesAmount + "): ");
-            numInStr = Console.ReadLine();
-            if (int.TryParse(numInStr, out num)) {
-                if (num < 1 || num > enterprisesAmount) {
-                    Console.WriteLine("Введіть номер підприємства з діапазону!");
-                }
-                else {
-                    isCorrect = true;
-                }
-            }
-            else {
-                Console.WriteLine("Введіть число!");
-            }
-        } while (!isCorrect);
-
-        return num;
-    }
-
-    private void PrintPlayersInfo(List<Player> playersInGame) {
-        foreach (var player in playersInGame) {
-            Console.WriteLine("Гравець " + player.nameInGame + " зараз має " + player.moneyAmount + " гривень. " +
-                              "Знаходиться у " + design.GetCountryNameByPlayer(field, player) +
-                              " на клітинці " + design.PrintCellTitleInAText(field.TakeCardByPlayerPos(player)) +
-                              ". Його підприємства: ");
-            design.PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
-        }
-    }
-
     private void PreTurnThings(Player player, List<Player> playersInGame) {
         player.MakeTurnForPawnedEnter(field);
-        Console.WriteLine();
-        PrintPlayersInfo(playersInGame);
-        Console.WriteLine();
+        JustOutput.PrintPlayersInfo(playersInGame, field);
         PawnEnterpriseOrBuildHotel(player);
     }
     private void PawnEnterpriseOrBuildHotel(Player player) {
@@ -209,58 +155,58 @@ public class GamePlay {
         List<Enterprise> enterprisesToBuildHotel = player.GetFullIndustryWithoutNHotelsEnterprises(field);
         bool isContinue = true;
 
-        Console.WriteLine(player.nameInGame + " може перед ходом " +
-                          "закласти підприємство (" + notPawnedEnterprises.Count + " шт.) у банк, " +
-                          "викупити підприємство (" + pawnedEnterprises.Count + " шт.) з банку, " +
-                          "побудувати готель (" + enterprisesToBuildHotel.Count + " шт.) на підприємстві");
+        JustOutput.PrintText(OutputPhrases.TextPreTurnMainOutput(player, notPawnedEnterprises.Count, pawnedEnterprises.Count, enterprisesToBuildHotel.Count));
 
         do {
-            int actionNum = GetNumOfAction();
+            JustOutput.PrintText(OutputPhrases.TextGetNumOfPreTurnAction());
+            string actionNum = Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(0, 3));
             switch (actionNum) {
-                case 1:
+                case "1":
                     if (notPawnedEnterprises.Count == 0) {
-                        Console.WriteLine("На даний момент немає підприємств для закладання у банк");
+                        JustOutput.PrintText(OutputPhrases.TextNoEnterprisesFor("pawn"));
                     }
                     else {
-                        Console.WriteLine("Ваші не закладені у банк підприємства:");
-                        design.PrintAListOfEnterprisesInOneLine(notPawnedEnterprises);
-                        int enterpriseNum = GainEnterpriseNum(notPawnedEnterprises.Count) - 1;
+                        JustOutput.PrintEnterprises(notPawnedEnterprises, "notPawned");
+                        JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(notPawnedEnterprises.Count));
+                        int enterpriseNum = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, notPawnedEnterprises.Count))) - 1;
+
                         notPawnedEnterprises[enterpriseNum].PawnInBank(field);
                         notPawnedEnterprises.RemoveAt(enterpriseNum);
                     }
                     break;
-                case 2:
+                case "2":
                     if (pawnedEnterprises.Count == 0) {
-                        Console.WriteLine("На даний момент немає підприємств для викупу з банку");
+                        JustOutput.PrintText(OutputPhrases.TextNoEnterprisesFor("unPawn"));
                     }
                     else {
-                        Console.WriteLine("Ваші закладені у банк підприємства:");
-                        design.PrintAListOfEnterprisesInOneLine(pawnedEnterprises);
-                        int enterpriseNum = GainEnterpriseNum(pawnedEnterprises.Count) - 1;
+                        JustOutput.PrintEnterprises(pawnedEnterprises, "pawned");
+                        JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(pawnedEnterprises.Count));
+                        int enterpriseNum = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, pawnedEnterprises.Count))) - 1;
+
                         if (player.moneyAmount > pawnedEnterprises[enterpriseNum].priceToBuy) {
                             pawnedEnterprises[enterpriseNum].UnPawnFromBank(field);
                             pawnedEnterprises.RemoveAt(enterpriseNum);
                         }
                         else {
-                            Console.WriteLine("На жаль, грошей для викупу не вистачає");
+                            JustOutput.PrintText(OutputPhrases.TextNoMoneyForUnpawnOrBuild(true));
                         }
                     }
                     break;
-                case 3:
+                case "3":
                     if (enterprisesToBuildHotel.Count == 0) {
-                        Console.WriteLine("На даний момент немає підприємств для будування готелю там");
+                        JustOutput.PrintText(OutputPhrases.TextNoEnterprisesFor("hotel"));
                     }
                     else {
-                        Console.WriteLine("Ваші підприємства, на яких можна збудувати готель (для побудови необхідно " +
-                                          "в рази більше грошей від покупки підприємства):");
-                        design.PrintAListOfEnterprisesInOneLine(enterprisesToBuildHotel);
-                        int enterpriseNum = GainEnterpriseNum(enterprisesToBuildHotel.Count) - 1;
+                        JustOutput.PrintEnterprises(enterprisesToBuildHotel, "hotel");
+                        JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(enterprisesToBuildHotel.Count));
+                        int enterpriseNum = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprisesToBuildHotel.Count))) - 1;
+
                         if (player.moneyAmount > enterprisesToBuildHotel[enterpriseNum].priceToBuildHotel) {
                             enterprisesToBuildHotel[enterpriseNum].BuildHomeInEnterprise();
                             enterprisesToBuildHotel.RemoveAt(enterpriseNum);
                         }
                         else {
-                            Console.WriteLine("На жаль, грошей для побудови готелю тут не вистачає");
+                            JustOutput.PrintText(OutputPhrases.TextNoMoneyForUnpawnOrBuild(false));
                         }
                     }
                     break;
@@ -270,35 +216,5 @@ public class GamePlay {
                     break;
             }
         } while (isContinue);
-    }
-
-    private int GetNumOfAction() {
-        Console.WriteLine("\nВведіть");
-        Console.WriteLine("  1, якщо хочете закласти підприємство у банк");
-        Console.WriteLine("  2, якщо хочете викупити підприємство з банку");
-        Console.WriteLine("  3, якщо хочете побудувати готель на підприємстві");
-        Console.WriteLine("  0, якщо поки що нічого не хочете");
-        
-        bool isCorrect = false;
-        string numInStr;
-        int num;
-        
-        do {
-            Console.Write("Ваша відповідь: ");
-            numInStr = Console.ReadLine();
-            if (int.TryParse(numInStr, out num)) {
-                if (num is < 0 or > 3) {
-                    Console.WriteLine("Введіть коректний номер!");
-                }
-                else {
-                    isCorrect = true;
-                }
-            }
-            else {
-                Console.WriteLine("Введіть число!");
-            }
-        } while (!isCorrect);
-
-        return num;
     }
 }

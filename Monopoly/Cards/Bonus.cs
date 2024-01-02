@@ -1,20 +1,21 @@
-namespace Monopoly.Cards; 
+namespace Monopoly.Cards;
+using Monopoly.OutputDesign;
 
 public class Bonus : Card {
     private delegate string Action(Field field, Player player);
     
     private readonly int[] probability = { 50, 20, 10, 20 };
     
-    public string[] TextToPrintInAField {
-        get { return new[] { "БОНУС" }; }
+    public override string[] TextToPrintInAField {
+        get { return OutputPhrases.outputTextByTags["Bonus"]; }
     }
     
-    public string DoActionIfArrived(Field field, Player player) {
+    public override string DoActionIfArrived(Field field, Player player) {
         return GivePlayerABonus(field, player);
     }
     
-    public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
-        return Card.JustTurn(field, player, out isNextMoveNeed);
+    public override string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
+        return JustTurn(field, player, out isNextMoveNeed);
     }
 
     private string GivePlayerABonus(Field field, Player player) {
@@ -42,21 +43,24 @@ public class Bonus : Card {
     }
 
     private string Give500ToPlayer(Field field, Player player) {
-        player.moneyAmount += 500;
-        return player.nameInGame + " отримує 500 гривень!";
+        int bonusMoney = 500;
+        player.moneyAmount += bonusMoney;
+        return OutputPhrases.TextBonusOrZradaMoneyAmount(player, bonusMoney, true);
     }
     
     private string Give1000ToPlayer(Field field, Player player) {
-        player.moneyAmount += 1000;
-        return player.nameInGame + " отримує 1000 гривень!";
+        int bonusMoney = 1000;
+        player.moneyAmount += bonusMoney;
+        return OutputPhrases.TextBonusOrZradaMoneyAmount(player, bonusMoney, true);
     }
 
     private string Give5000ToPlayer(Field field, Player player) {
-        player.moneyAmount += 5000;
-        return player.nameInGame + " отримує 5000 гривень!";
+        int bonusMoney = 2000;
+        player.moneyAmount += bonusMoney;
+        return OutputPhrases.TextBonusOrZradaMoneyAmount(player, bonusMoney, true);
     }
 
     private string GiveNothing(Field field, Player player) {
-        return player.nameInGame + " нічого не отримує. Пощастить наступного разу!";
+        return OutputPhrases.TextNoGainOrTake(player);
     }
 }

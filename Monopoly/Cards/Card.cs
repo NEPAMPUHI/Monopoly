@@ -1,10 +1,11 @@
-namespace Monopoly.Cards; 
+namespace Monopoly.Cards;
+using Monopoly.OutputDesign;
 
-public interface Card {
-    public string[] TextToPrintInAField { get; }
-    public string DoActionIfArrived(Field field, Player player);
-    public string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed);
-    internal static string JustTurn(Field field, Player player, out bool isNextMoveNeed) {
+public abstract class Card {
+    public abstract string[] TextToPrintInAField { get; }
+    public abstract string DoActionIfArrived(Field field, Player player);
+    public abstract string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed);
+    internal string JustTurn(Field field, Player player, out bool isNextMoveNeed) {
         isNextMoveNeed = true;
         return player.nameInGame + " ходить.";
     }
