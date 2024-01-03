@@ -8,17 +8,6 @@ public static class JustOutput { // Максимум в ширину — 186 с�
     public static readonly int maxCellsInOneLine = 8;
     public static readonly int maxSymbolsInOneCell = 16;
     public static readonly int screenWidth = 186;
-    public static void PrintAllField(Field field) {
-        for (int i = 0; i < field.fieldArrays.Length; i++) {
-            Console.WriteLine("|" + field.countriesArray[i] + "|");
-            for (int k = 0; k < field.fieldArrays[i].Length; k++) {
-                Console.WriteLine("------------------------------");
-                PrintACell(field.fieldArrays[i][k]);
-            }
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("______________________________________________________________________\n");
-        }
-    }
 
     public static void PrintAListOfEnterprisesInOneLine(List<Enterprise> enterprises) {
         string[][] enterprisesInLines = new string[enterprises.Count][];
@@ -67,6 +56,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
     }
 
     public static void PrintText(string textToPrint) {
+        Thread.Sleep(500);
         Console.WriteLine(textToPrint);
     }
 
@@ -109,4 +99,78 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         PrintAListOfEnterprisesInOneLine(enterprises);
     }
 
+    public static void PrintMyChoice() {
+        Console.Write("Мій вибір: ");
+    }
+
+    public static void PrintAllField(Field field) {
+        List<int>[][] fieldIndexes = OutputPhrases.fieldIndexes;
+        int cellWidth = OutputPhrases.maxCellWidth;
+        int cellHeight = OutputPhrases.cellHeight;
+
+        Console.Write(" ");
+        foreach (var list in fieldIndexes[0]) {
+            if (OutputPhrases.IsNotBoard(list)) {
+                Console.Write(new string(' ', cellWidth));
+            }
+            else {
+                Console.Write(new string('_', cellWidth));
+            }
+            Console.Write(" ");
+        }
+        Console.WriteLine();
+        for (int l = 0; l < fieldIndexes.Length; l++) {
+            string[][] curListCells = new string[fieldIndexes[l].Length][];
+            for (int i = 0; i < fieldIndexes[l].Length; i++) {
+                curListCells[i] = OutputPhrases.GetCellText(field, fieldIndexes[l][i]);
+            }
+            for (int i = 0; i < cellHeight; i++) {
+                if (OutputPhrases.IsNotBoard(fieldIndexes[l][0])) {
+                    Console.Write(" ");
+                }
+                else {
+                    Console.Write("|");
+                }
+                for (int k = 0; k < fieldIndexes[l].Length; k++) {
+                    Console.Write(curListCells[k][i]);
+                    if (!OutputPhrases.IsNotBoard(fieldIndexes[l][k])) {
+                        Console.Write("|");
+                    }
+                    else if (k < fieldIndexes[l].Length - 1 && !OutputPhrases.IsNotBoard(fieldIndexes[l][k + 1])) {
+                        Console.Write("|");
+                    }
+                    else {
+                        Console.Write(" ");
+                    }
+                }
+                Console.WriteLine();
+            }
+            if (OutputPhrases.IsNotBoard(fieldIndexes[l][0])) {
+                Console.Write(" ");
+            }
+            else {
+                Console.Write("|");
+            }
+            for (int i = 0; i < fieldIndexes[l].Length; i++) {
+                if (OutputPhrases.IsNotBoard(fieldIndexes[l][i]) &&
+                    (l == fieldIndexes.Length - 1 || OutputPhrases.IsNotBoard(fieldIndexes[l + 1][i]))) {
+                    Console.Write(new string(' ', cellWidth));
+                }
+                else {
+                    Console.Write(new string('_', cellWidth));
+                }
+                
+                if (!OutputPhrases.IsNotBoard(fieldIndexes[l][i])) {
+                    Console.Write("|");
+                }
+                else if (i < fieldIndexes[l].Length - 1 && !OutputPhrases.IsNotBoard(fieldIndexes[l][i + 1])) {
+                    Console.Write("|");
+                }
+                else {
+                    Console.Write(" ");
+                }
+            }
+            Console.WriteLine();
+        }
+    }
 }

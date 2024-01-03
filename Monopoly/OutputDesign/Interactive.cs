@@ -34,6 +34,28 @@ public static class Interactive {
     public static void PressEnter() {
         Console.ReadLine();
     }
+
+    public static string InputYourName() {
+        string name;
+        bool isCorrect;
+
+        do {
+            isCorrect = true;
+            Console.Write("Введіть ваше ім'я: ");
+            name = Console.ReadLine();
+
+            if (name.Length > 15) {
+                Console.WriteLine("Ім'я надто велике, спробуйте ще\n");
+                isCorrect = false;
+            }
+            else if (name.Length == 0) {
+                Console.WriteLine("У вас не може не бути імені\n");
+                isCorrect = false;
+            }
+        } while (!isCorrect);
+
+        return name;
+    }
     public static string[] InputPlayersNamesToPlay() {
         bool isContinue = true;
         int playersAmount = 0;
@@ -87,7 +109,7 @@ public static class Interactive {
             }
 
             if (name.Length == 0) {
-                Console.WriteLine("Ваше ім'я навіть під мікроскопом не видно, спробуйте ще\n");
+                Console.WriteLine("У вас не може не бути імені\n");
                 isCorrect = false;
                 continue;
             }

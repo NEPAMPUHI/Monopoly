@@ -4,18 +4,21 @@ using Monopoly.Cards;
 using Monopoly.OutputDesign;
 
 class Program {
-    static void Main(string[] args) {
+    static void Main() {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        var enc1251 = Encoding.GetEncoding(1251);
-
-        System.Console.OutputEncoding = System.Text.Encoding.UTF8;
-        System.Console.InputEncoding = enc1251;
+        Console.OutputEncoding = Encoding.UTF8;
+        Console.InputEncoding = Encoding.GetEncoding(1251);
         
-        Field field = new Field();
+        string startOfTextFiles = "../../../text_info";
+        string[] nameFiles = Directory.GetFiles(startOfTextFiles);
+        string[] allNames = File.ReadAllLines(nameFiles[0]);
+        foreach (var str in allNames) {
+            Console.WriteLine(str);
+        }
 
+        Field field = new Field();
         JustOutput.PrintAllField(field);
-        JustOutput.PrintAllIndustries(field);
-        // Uncomment above if you wanna check out field fill (Ctrl+/)
+        
         App app = new App();
         app.Run();
     }

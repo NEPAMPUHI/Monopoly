@@ -1,4 +1,6 @@
 using Monopoly.Cards;
+using Monopoly.ComputerBots;
+using Monopoly.OutputDesign;
 
 namespace Monopoly;
 
@@ -12,12 +14,14 @@ public class Player {
     public bool canGoOutOfCountry;
     public int turnsCanContinueWork;
     public int howManyTimesWorked;
+    public AIBot? playerAI;
 
-    public Player(string nameInGame,
+    public Player(string nameInGame, AIBot? playerAI = null,
         ConsoleColor chipColor = ConsoleColor.White, int moneyAmount = 0, Position? positionInField = null,
         int turnsToGoOutOfPrison = 0, int howManyTimesPayedInPrison = 0,
         bool canGoOutOfCountry = false, int turnsCanContinueWork = 0, int howManyTimesWorked = 0) {
         this.nameInGame = nameInGame;
+        this.playerAI = playerAI;
         this.moneyAmount = moneyAmount;
         this.positionInField = positionInField;
         this.chipColor = chipColor;
@@ -86,5 +90,83 @@ public class Player {
 
     public bool IsInPrison() {
         return turnsToGoOutOfPrison != 0;
+    }
+
+
+    public string BuyEnterpriseOrNot(Enterprise enterprise) {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Interactive.GetPersonChoice(new List<string> { "1", "2" })
+            : playerAI.BotBuyEnterpriseOrNot(this, enterprise);
+    }
+
+    public string PayToGoOutOfPrisonOrNot() {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Interactive.GetPersonChoice(new List<string>() { "1", "2" })
+            : playerAI.BotPayToGoOutOfPrisonOrNot(this);
+    }
+
+    public string StayOnWorkOrNot() {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Interactive.GetPersonChoice(new List<string>() { "1", "2" })
+            : playerAI.BotStayOnWorkOrNot(this);
+    }
+
+    public int WhichEnterprisePawnToNotLose(List<Enterprise> enterprises) {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprises.Count))) - 1
+            : playerAI.BotWhichEnterprisePawnToNotLose(this, enterprises);
+    }
+
+    public string PawnEnterpriseOrBuildHotelPreTurn(List<Enterprise> notPawnedEnterprises,
+        List<Enterprise> pawnedEnterprises, List<Enterprise> enterprisesToBuildHotel) {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(0, 3))
+            : playerAI.BotPawnEnterpriseOrBuildHotelPreTurn(this, notPawnedEnterprises, pawnedEnterprises, enterprisesToBuildHotel);
+    }
+
+    public int WhichEnterprisePawnPreTurn(List<Enterprise> notPawnedEnterprises) {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, notPawnedEnterprises.Count))) - 1
+            : playerAI.BotWhichEnterprisePawnPreTurn(this, notPawnedEnterprises);
+    }
+
+    public int WhichEnterpriseUnPawnPreTurn(List<Enterprise> pawnedEnterprises) {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, pawnedEnterprises.Count))) - 1
+            : playerAI.BotWhichEnterpriseUnPawnPreTurn(this, pawnedEnterprises);
+    }
+
+    public int WhichEnterpriseBuildHotelPreTurn(List<Enterprise> enterprisesToBuildHotel) {
+        if (IsABot()) {
+            JustOutput.PrintMyChoice();
+        }
+        return !IsABot()
+            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprisesToBuildHotel.Count))) - 1
+            : playerAI.BotWhichEnterpriseBuildHotelPreTurn(this, enterprisesToBuildHotel);
+    }
+
+    public bool IsABot() {
+        return playerAI != null;
     }
 }

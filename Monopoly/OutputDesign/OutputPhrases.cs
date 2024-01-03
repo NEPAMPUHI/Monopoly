@@ -20,6 +20,7 @@ public static class OutputPhrases {
         {"Prison", new string[] {"ТЮРМА"}},
         {"ExitChance", new string[] { "ШАНС", "ВИХОДУ" }},
         {"Review", new string[] { "ОГЛЯД" }},
+        {"Start", new string[] { "СТАРТ" }}
     };
 
     public static string[] TextToShowEnterprise(Enterprise enterprise) {
@@ -180,6 +181,10 @@ public static class OutputPhrases {
     public static string TextRollDice(Player player) {
         return player.nameInGame + ", натисніть Enter щоб підкинути кубик";
     }
+    
+    public static string TextPressEnterToGoNextPlayer() {
+        return "Натисніть Enter щоб перейти до наступного гравця";
+    }
 
     public static string TextDiceNumber(int number) {
         return "Випадає число " + number + "!\n";
@@ -267,9 +272,88 @@ public static class OutputPhrases {
     //__________________________________________________________________________________________________________________________________________
     // Field
 
+    public static readonly List<int>[][] fieldIndexes = { // Struct: (is in field, which array in field, which cell in field)
+        new [] { nL(0, 0, 0), nL(1, 0, 16), nL(1, 0, 17), nL(1, 0, 18), nL(1, 0, 19), nL(1, 0, 20), nL(1, 1, 6), nL(1, 1, 7), nL(1, 1, 8), nL(1, 1, 9), nL(1, 1, 10) },
+        new [] { nL(1, 0, 15), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 1, 5), nL(0, 0, 0), nL(0, 1, 1), nL(0, 0, 0), nL(1, 1, 11) },
+        new [] { nL(1, 0, 14), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 1, 4), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 1, 12) },
+        new [] { nL(1, 0, 13), nL(1, 0, 0), nL(1, 0, 1), nL(1, 0, 2), nL(1, 0, 3), nL(1, -1, 0), nL(1, 1, 3), nL(1, 1, 2), nL(1, 1, 1), nL(1, 1, 0), nL(1, 1, 13) },
+        new [] { nL(1, 0, 12), nL(0, 0, 0), nL(0, 0, 1), nL(0, 0, 0), nL(1, 0, 4), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 1, 14) },
+        new [] { nL(1, 0, 11), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 0, 5), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 1, 15) },
+        new [] { nL(1, 0, 10), nL(1, 0, 9), nL(1, 0, 8), nL(1, 0, 7), nL(1, 0, 6), nL(1, 1, 20), nL(1, 1, 19), nL(1, 1, 18), nL(1, 1, 17), nL(1, 1, 16), nL(0, 0, 0) }
+    };
+    public static readonly int cellHeight = (new Enterprise(0, new Industry(new List<Position>(), ""), "")).TextToPrintInAField.Length;
+    public static readonly int maxCellWidth = 15;
+
+    private static List<int> nL(params int[] nums) {
+        List<int> list = new List<int>();
+        foreach (var num in nums) {
+            list.Add(num);
+        }
+        return list;
+    }
+
+    public static bool IsNotBoard(List<int> indexes) {
+        return indexes[0] == 0;
+    }
+    public static string[] GetCellText(Field field, List<int> indexes) {
+        string[] res = new string[cellHeight];
+        if (indexes[0] == 1) {
+            string[] cardText = new string[1];
+            if (indexes[1] == -1) {
+                cardText = outputTextByTags["Start"];
+            }
+            else {
+                cardText = field.fieldArrays[indexes[1]][indexes[2]].TextToPrintInAField;
+            }
+
+            int emptyStrBelowAmount = (cellHeight - cardText.Length) / 2;
+            int emptyStrAboveAmount = cellHeight - (cardText.Length + emptyStrBelowAmount);
+
+            int index = 0;
+            for (int k = 0; k < emptyStrAboveAmount; k++, index++) {
+                res[index] = new string(' ', maxCellWidth);
+            }
+            for (int k = 0; k < cardText.Length; k++, index++) {
+                int spacesLeftAmount = (maxCellWidth - cardText[k].Length) / 2;
+                int spacesRightAmount = maxCellWidth - (cardText[k].Length + spacesLeftAmount);
+                res[index] = new string(' ', spacesLeftAmount) + cardText[k] + new string(' ', spacesRightAmount);
+            }
+            for (int k = 0; k < emptyStrBelowAmount; k++, index++) {
+                res[index] = new string(' ', maxCellWidth);
+            }
+        }
+        else {
+            if (indexes[2] == 0) {
+                for (int i = 0; i < cellHeight; i++) {
+                    res[i] = new string(' ', maxCellWidth);
+                }
+            }
+            else if (indexes[2] == 1) {
+                for (int i = 0; i < cellHeight - 1; i++) {
+                    res[i] = new string(' ', maxCellWidth);
+                }
+
+                string curCountryStr = field.countriesArray[indexes[1]];
+                int spacesLeftAmount = (maxCellWidth - curCountryStr.Length) / 2;
+                int spacesRightAmount = maxCellWidth - (curCountryStr.Length + spacesLeftAmount);
+                res[cellHeight - 1] = new string(' ', spacesLeftAmount) + curCountryStr + new string(' ', spacesRightAmount);
+            }
+        }
+
+        return res;
+    }
+
+    public static string LineAboveOrBelow(bool isAbove) {
+        string strToReturn = "";
+        strToReturn += isAbove ? ' ' : '|';
+        strToReturn += new string('_', JustOutput.maxSymbolsInOneCell + 2);
+        strToReturn += isAbove ? ' ' : '|';
+        return strToReturn;
+    }
+    
     public static string PrintCellTitleInAText(Card? card) {
         return ((card is null) ?
-            ("<СТАРТ>") :
+            (outputTextByTags["Start"][0]) :
             ((card is Enterprise enterprise) ? 
             (enterprise.title + " (" + enterprise.industry.industryName + ")") : 
             (MakeOneStringFromArray(card.TextToPrintInAField))));
@@ -295,9 +379,7 @@ public static class OutputPhrases {
         string strToDuplicate = "";
 
         strToDuplicate += withSideBoards ? '|' : ' ';
-        for (int i = 0; i < JustOutput.maxSymbolsInOneCell + 2; i++) {
-            strToDuplicate += '_';
-        }
+        strToDuplicate += new string('_', maxCellWidth);
         strToDuplicate += withSideBoards ? '|' : ' ';
         strToDuplicate += ' ';
 

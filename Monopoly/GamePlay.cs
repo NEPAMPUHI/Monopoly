@@ -17,12 +17,16 @@ public class GamePlay {
     private const int startCapital = 1000;
 
     public GamePlay() {
-        field = new Field();
+        RecreateField();
         indexOfEndOfCountry = field.specialIndexesByCellNames["ExitChance"];
         indexOfEndOfArray = field.fieldArrays[0].Length - 1;
         indexOfWorkCell = field.specialIndexesByCellNames["Work"];
         enterOnArrayInAnother = indexOfWorkCell;
         enterTnArrayAfterStart = field.specialIndexesByCellNames["Bonus"] + 1;
+    }
+
+    public void RecreateField() {
+        field = new Field();
     }
 
     public static int RollDice() {
@@ -33,7 +37,7 @@ public class GamePlay {
         return Convert.ToBoolean(App.rand.Next(0, 2));
     }
 
-    public void StartGameWithFriends(Player[] players) {
+    public void StartGame(Player[] players) {
         bool isGameEnd = false;
         List<Player> playersInGame = players.ToList();
         int curIndexPlayerTurn = 0;
@@ -66,6 +70,11 @@ public class GamePlay {
                 }
             }
             curIndexPlayerTurn = (curIndexPlayerTurn + 1) % playersInGame.Count;
+
+            if (curPlayer.IsABot()) {
+                JustOutput.PrintText(OutputPhrases.TextPressEnterToGoNextPlayer());
+                Interactive.PressEnter();
+            }
         }
     }
 
@@ -85,7 +94,9 @@ public class GamePlay {
         int curPlayerCell = player.positionInField.cellIndex;
         
         JustOutput.PrintText(OutputPhrases.TextRollDice(player));
-        Interactive.PressEnter();
+        if (!player.IsABot()) {
+            Interactive.PressEnter();
+        }
         int randTurnsAmount = RollDice();
         JustOutput.PrintText(OutputPhrases.TextDiceNumber(randTurnsAmount));
 
@@ -124,7 +135,7 @@ public class GamePlay {
             JustOutput.PrintDebtAndUnPawnEnterprises(player, enterprises);
 
             JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(enterprises.Count));
-            int enterpriseToPawn = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprises.Count))) - 1;
+            int enterpriseToPawn = player.WhichEnterprisePawnToNotLose(enterprises);
 
             enterprises[enterpriseToPawn].PawnInBank(field);
             enterprises.RemoveAt(enterpriseToPawn);
@@ -159,7 +170,7 @@ public class GamePlay {
 
         do {
             JustOutput.PrintText(OutputPhrases.TextGetNumOfPreTurnAction());
-            string actionNum = Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(0, 3));
+            string actionNum = player.PawnEnterpriseOrBuildHotelPreTurn(notPawnedEnterprises, pawnedEnterprises, enterprisesToBuildHotel);
             switch (actionNum) {
                 case "1":
                     if (notPawnedEnterprises.Count == 0) {
@@ -168,7 +179,7 @@ public class GamePlay {
                     else {
                         JustOutput.PrintEnterprises(notPawnedEnterprises, "notPawned");
                         JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(notPawnedEnterprises.Count));
-                        int enterpriseNum = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, notPawnedEnterprises.Count))) - 1;
+                        int enterpriseNum = player.WhichEnterprisePawnPreTurn(notPawnedEnterprises);
 
                         notPawnedEnterprises[enterpriseNum].PawnInBank(field);
                         notPawnedEnterprises.RemoveAt(enterpriseNum);
@@ -181,7 +192,7 @@ public class GamePlay {
                     else {
                         JustOutput.PrintEnterprises(pawnedEnterprises, "pawned");
                         JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(pawnedEnterprises.Count));
-                        int enterpriseNum = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, pawnedEnterprises.Count))) - 1;
+                        int enterpriseNum = player.WhichEnterpriseUnPawnPreTurn(pawnedEnterprises);
 
                         if (player.moneyAmount > pawnedEnterprises[enterpriseNum].priceToBuy) {
                             pawnedEnterprises[enterpriseNum].UnPawnFromBank(field);
@@ -199,7 +210,7 @@ public class GamePlay {
                     else {
                         JustOutput.PrintEnterprises(enterprisesToBuildHotel, "hotel");
                         JustOutput.PrintText(OutputPhrases.TextInputEnterpriseNum(enterprisesToBuildHotel.Count));
-                        int enterpriseNum = Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprisesToBuildHotel.Count))) - 1;
+                        int enterpriseNum = player.WhichEnterpriseBuildHotelPreTurn(enterprisesToBuildHotel);
 
                         if (player.moneyAmount > enterprisesToBuildHotel[enterpriseNum].priceToBuildHotel) {
                             enterprisesToBuildHotel[enterpriseNum].BuildHomeInEnterprise();

@@ -24,7 +24,7 @@ public class Prison : Card {
         int priceToPay = (startPriceToPay + turnsToGoOut * additionPriceForEachTurn) * (player.howManyTimesPayedInPrison + 1);
 
         JustOutput.PrintText(OutputPhrases.TextIsPayedForFreedom(priceToPay));
-        string choice = Interactive.GetPersonChoice(new List<string>() { "1", "2" });
+        string choice = player.PayToGoOutOfPrisonOrNot();
 
         if (choice == "1") {
             if (player.moneyAmount >= priceToPay) {

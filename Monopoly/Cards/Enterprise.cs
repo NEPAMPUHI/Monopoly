@@ -123,7 +123,7 @@ public class Enterprise : Card {
         }
 
         JustOutput.PrintText(OutputPhrases.TextBuyEnterpriseOrNot(player, this));
-        string playerChoice = Interactive.GetPersonChoice(new List<string>() { "1", "2"});
+        string playerChoice = player.BuyEnterpriseOrNot(this);
 
         if (playerChoice == "1") {
             BuyingCard(field, player);

@@ -111,8 +111,7 @@ public class Field {
             List<int> arraysIndexesToFill = new List<int>() { i };
 
             FillIndustriesInField(industriesIndexes, countryIndustriesIndexes, arraysIndexesToFill,
-                ref curIndustryArrIndex,
-                industries);
+                ref curIndustryArrIndex, industries);
         }
     }
 

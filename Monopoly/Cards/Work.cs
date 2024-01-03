@@ -37,7 +37,7 @@ public class Work : Card {
         }
         
         JustOutput.PrintText(OutputPhrases.TextWorkChoice(player));
-        string personChoice = Interactive.GetPersonChoice(new List<string>() { "1", "2"});
+        string personChoice = player.StayOnWorkOrNot();
         if (personChoice == "1") {
             isNextMoveNeed = false;
             player.turnsCanContinueWork--;
