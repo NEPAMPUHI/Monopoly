@@ -1,6 +1,6 @@
 using Monopoly.Cards;
 
-namespace Monopoly; 
+namespace Monopoly;
 
 public class Industry {
     public List<Position> enterprisesIndexes;
@@ -15,7 +15,7 @@ public class Industry {
 
     public List<Enterprise> GetEnterprisesInIndustry(Field field) {
         List<Enterprise> ans = new List<Enterprise>();
-        
+
         foreach (var pos in enterprisesIndexes) {
             ans.Add(field.fieldArrays[pos.arrayIndex][pos.cellIndex] as Enterprise);
         }

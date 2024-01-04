@@ -1,4 +1,4 @@
-namespace Monopoly; 
+namespace Monopoly;
 
 public class Position {
     public int arrayIndex;

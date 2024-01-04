@@ -16,7 +16,7 @@ public class Player {
     public int howManyTimesWorked;
     public AIBot? playerAI;
 
-    public Player(string nameInGame, AIBot? playerAI, ConsoleColor chipColor, int moneyAmount = 0, 
+    public Player(string nameInGame, AIBot? playerAI, ConsoleColor chipColor, int moneyAmount = 0,
         Position? positionInField = null, int turnsToGoOutOfPrison = 0, int howManyTimesPayedInPrison = 0,
         bool canGoOutOfCountry = false, int turnsCanContinueWork = 0, int howManyTimesWorked = 0) {
         this.nameInGame = nameInGame;
@@ -40,12 +40,13 @@ public class Player {
                 }
             }
         }
+
         return ans;
     }
 
     public List<Enterprise> GetPawnedOrNotPlayerEnterprises(Field field, bool isPawnedNeed) {
         List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
-        
+
         for (int i = 0; i < enterprises.Count; i++) {
             Enterprise enterprise = enterprises[i];
             if (isPawnedNeed != enterprise.IsPawned()) {
@@ -53,9 +54,10 @@ public class Player {
                 i--;
             }
         }
+
         return enterprises;
     }
-    
+
     public List<Enterprise> GetFullIndustryWithoutNHotelsEnterprises(Field field) {
         List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
         for (int i = 0; i < enterprises.Count; i++) {
@@ -65,6 +67,7 @@ public class Player {
                 i--;
             }
         }
+
         return enterprises;
     }
 
@@ -80,7 +83,8 @@ public class Player {
         }
     }
 
-    public void FreeAllEnterprises(Field field) { // Tut?
+    public void FreeAllEnterprises(Field field) {
+        // Tut?
         List<Enterprise> enterprises = GetAllPlayerEnterprises(field);
         foreach (var enterprise in enterprises) {
             enterprise.ClearEnterprise();
@@ -96,6 +100,7 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
             ? Interactive.GetPersonChoice(new List<string> { "1", "2" })
             : playerAI.BotBuyEnterpriseOrNot(this, enterprise);
@@ -105,6 +110,7 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
             ? Interactive.GetPersonChoice(new List<string>() { "1", "2" })
             : playerAI.BotPayToGoOutOfPrisonOrNot(this);
@@ -114,6 +120,7 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
             ? Interactive.GetPersonChoice(new List<string>() { "1", "2" })
             : playerAI.BotStayOnWorkOrNot(this);
@@ -123,6 +130,7 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
             ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprises.Count))) - 1
             : playerAI.BotWhichEnterprisePawnToNotLose(this, enterprises);
@@ -133,17 +141,21 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
             ? Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(0, 3))
-            : playerAI.BotPawnEnterpriseOrBuildHotelPreTurn(this, notPawnedEnterprises, pawnedEnterprises, enterprisesToBuildHotel);
+            : playerAI.BotPawnEnterpriseOrBuildHotelPreTurn(this, notPawnedEnterprises, pawnedEnterprises,
+                enterprisesToBuildHotel);
     }
 
     public int WhichEnterprisePawnPreTurn(List<Enterprise> notPawnedEnterprises) {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
-            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, notPawnedEnterprises.Count))) - 1
+            ? Convert.ToInt32(
+                Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, notPawnedEnterprises.Count))) - 1
             : playerAI.BotWhichEnterprisePawnPreTurn(this, notPawnedEnterprises);
     }
 
@@ -151,8 +163,10 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
-            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, pawnedEnterprises.Count))) - 1
+            ? Convert.ToInt32(
+                Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, pawnedEnterprises.Count))) - 1
             : playerAI.BotWhichEnterpriseUnPawnPreTurn(this, pawnedEnterprises);
     }
 
@@ -160,8 +174,10 @@ public class Player {
         if (IsABot()) {
             JustOutput.PrintMyChoice();
         }
+
         return !IsABot()
-            ? Convert.ToInt32(Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprisesToBuildHotel.Count))) - 1
+            ? Convert.ToInt32(
+                Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, enterprisesToBuildHotel.Count))) - 1
             : playerAI.BotWhichEnterpriseBuildHotelPreTurn(this, enterprisesToBuildHotel);
     }
 

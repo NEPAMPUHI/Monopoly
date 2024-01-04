@@ -1,17 +1,26 @@
 using Monopoly.Cards;
 using Monopoly.OutputDesign;
 
-namespace Monopoly.ComputerBots; 
+namespace Monopoly.ComputerBots;
 
-public class AlwaysAgreeIfCanBot : AIBot {
+public class ZhlobBot : AIBot {
+    private const int upperPriceToBuy = 150;
+
     public string BotBuyEnterpriseOrNot(Player player, Enterprise enterprise) {
-        string choice = "1";
+        string choice;
+        if (enterprise.priceToBuy <= upperPriceToBuy) {
+            choice = "1";
+        }
+        else {
+            choice = "2";
+            
+        }
         JustOutput.PrintText(choice);
         return choice;
     }
 
     public string BotPayToGoOutOfPrisonOrNot(Player player) {
-        string choice = "1";
+        string choice = "2";
         JustOutput.PrintText(choice);
         return choice;
     }
@@ -35,19 +44,22 @@ public class AlwaysAgreeIfCanBot : AIBot {
         return choice;
     }
 
-    public int BotWhichEnterprisePawnPreTurn(Player player, List<Enterprise> notPawnedEnterprises) { // Will be never used
-        int choice = 1;
-        JustOutput.PrintText(Convert.ToString(choice));
-        return choice;
-    }
-    
-    public int BotWhichEnterpriseUnPawnPreTurn(Player player, List<Enterprise> pawnedEnterprises) { // Will be never used
+    public int BotWhichEnterprisePawnPreTurn(Player player, List<Enterprise> notPawnedEnterprises) {
+        // Will be never used
         int choice = 1;
         JustOutput.PrintText(Convert.ToString(choice));
         return choice;
     }
 
-    public int BotWhichEnterpriseBuildHotelPreTurn(Player player, List<Enterprise> enterprisesToBuildHotel) { // Will be never used
+    public int BotWhichEnterpriseUnPawnPreTurn(Player player, List<Enterprise> pawnedEnterprises) {
+        // Will be never used
+        int choice = 1;
+        JustOutput.PrintText(Convert.ToString(choice));
+        return choice;
+    }
+
+    public int BotWhichEnterpriseBuildHotelPreTurn(Player player, List<Enterprise> enterprisesToBuildHotel) {
+        // Will be never used
         int choice = 1;
         JustOutput.PrintText(Convert.ToString(choice));
         return choice;

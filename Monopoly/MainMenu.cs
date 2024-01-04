@@ -5,11 +5,12 @@ using Monopoly.OutputDesign;
 namespace Monopoly;
 
 public class MainMenu {
-    private readonly GamePlay game = new ();
-    
+    private readonly GamePlay game = new();
+
     internal void DisplayMenu() {
         JustOutput.PrintText(OutputPhrases.TextMainMenu());
     }
+
     internal void PerformAction(ref bool shouldContinue) {
         switch (Interactive.GetPersonChoice(JustOutput.MakeAListFromDiapasone(1, 4))) {
             case "1":
@@ -26,21 +27,25 @@ public class MainMenu {
                 break;
         }
     }
+
     private void PlayWithComputer() {
         string playerName = Interactive.InputYourName();
 
         int botsAmount = 3;
         string[] botsNames = GenerateNamesForBots(botsAmount);
         ConsoleColor[] playerColors = ChooseColorForEach(botsAmount + 1);
-        
+
         Player[] players = new Player[botsAmount + 1];
         players[0] = new Player(playerName, null, playerColors[0]);
+        bool isAgreeBot = true;
         for (int i = 1; i < botsAmount + 1; i++) {
-            players[i] = new Player(botsNames[i - 1], new AlwaysAgreeIfCanBot(), playerColors[i]);
+            players[i] = new Player(botsNames[i - 1],
+                isAgreeBot ? new AlwaysAgreeIfCanBot() : new ZhlobBot(), playerColors[i]);
         }
 
         PlayGame(players);
     }
+
     private void PlayWithFriends() {
         string[] playerNames = Interactive.InputPlayersNamesToPlay();
         ConsoleColor[] playerColors = ChooseColorForEach(playerNames.Length);
@@ -71,18 +76,18 @@ public class MainMenu {
                     curColorIndex = -1;
                 }
             }
-            
+
             if (curColorIndex == -1) {
                 continue;
             }
-            
+
             foreach (var badColor in JustOutput.notGoodColorsForPlayers) {
                 if ((ConsoleColor)curColorIndex == badColor) {
                     curColorIndex = -1;
                     break;
                 }
             }
-            
+
             if (curColorIndex != -1) {
                 colorIndexes[curIndex] = curColorIndex;
                 curIndex++;
@@ -98,7 +103,7 @@ public class MainMenu {
 
     private string[] GenerateNamesForBots(int botsAmount) {
         string[] names = new string[botsAmount];
-        
+
         string startOfTextFiles = "../../../text_info";
         string nameOfNamesDir = startOfTextFiles + "/" + "names_for_bots";
         string[] nameFiles = Directory.GetFiles(nameOfNamesDir);

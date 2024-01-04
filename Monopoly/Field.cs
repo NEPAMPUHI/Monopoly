@@ -30,7 +30,7 @@ public class Field {
         { 13, "ExitChance" },
         { 17, "Review" },
     };
-    
+
     public readonly Dictionary<string, int> specialIndexesByCellNames = new Dictionary<string, int>() {
         { "Bonus", 2 },
         { "Zrada", 4 },
@@ -49,11 +49,11 @@ public class Field {
     private readonly int[][] commonIndustriesForEachFourEnters = {
         new[] { 16, 18 }
     };
-    
+
     private readonly int[][] commonIndustriesForEachTwoEnters = {
         new[] { 20 }
     };
-    
+
     private readonly int[][] privateIndustriesForEach = {
         new[] { 14, 15, 19 }
     };
@@ -63,6 +63,7 @@ public class Field {
         for (int i = 0; i < countriesAmount; i++) {
             fieldArrays[i] = new Card[arrayLength];
         }
+
         startCell = new Start();
 
         countriesArray = new string[countriesAmount];
@@ -81,7 +82,9 @@ public class Field {
     }
 
     public Card TakeCardByPlayerPos(Player player) {
-        return player.positionInField == null ? startCell : fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
+        return player.positionInField == null
+            ? startCell
+            : fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
     }
 
     private void NonEnterprisesCardFill() {
@@ -101,7 +104,7 @@ public class Field {
             }
         }
     }
-    
+
     private void CountryIndustriesFill(string countryDirName, ref int curIndustryArrIndex) {
         string[] countries = Directory.GetDirectories(countryDirName);
         List<int> countryIndexesInFile =
@@ -146,7 +149,7 @@ public class Field {
         industriesNeeded = commonIndustriesForEachTwoEnters.Length;
         internationalIndustriesIndexes = ChooseNonRepeatableNums(0, industries.Length, industriesNeeded);
         arraysIndexesToFill = new List<int>();
-        
+
         for (int i = 0; i < commonIndustriesForEachTwoEnters.Length; i++) {
             industriesList.Add(internationalIndustriesIndexes[i]);
         }
@@ -155,16 +158,17 @@ public class Field {
             arraysIndexesToFill.Add(i);
         }
 
-        FillIndustriesInField(industriesList, commonIndustriesForEachTwoEnters, arraysIndexesToFill, ref curIndustryArrIndex,
+        FillIndustriesInField(industriesList, commonIndustriesForEachTwoEnters, arraysIndexesToFill,
+            ref curIndustryArrIndex,
             industries);
         industriesList.Clear();
-        
-        
+
+
         industries = Directory.GetFiles(industriesDirs[2]);
         industriesNeeded = commonIndustriesForEachFourEnters.Length;
         internationalIndustriesIndexes = ChooseNonRepeatableNums(0, industries.Length, industriesNeeded);
         arraysIndexesToFill = new List<int>();
-        
+
         for (int i = 0; i < commonIndustriesForEachFourEnters.Length; i++) {
             industriesList.Add(internationalIndustriesIndexes[i]);
         }
@@ -173,13 +177,13 @@ public class Field {
             arraysIndexesToFill.Add(i);
         }
 
-        FillIndustriesInField(industriesList, commonIndustriesForEachFourEnters, arraysIndexesToFill, ref curIndustryArrIndex,
+        FillIndustriesInField(industriesList, commonIndustriesForEachFourEnters, arraysIndexesToFill,
+            ref curIndustryArrIndex,
             industries);
     }
 
     private void FillIndustriesInField(List<int> industriesIndexes, int[][] enterprisesIndexesInField,
         List<int> arraysIndexesToFill, ref int curIndustryIndexInGeneralArray, string[] industries) {
-
         for (int i = 0; i < industriesIndexes.Count; i++) {
             string currentIndustryDir = industries[industriesIndexes[i]];
             string currentIndustryName = GetLastWordAfterSlashForTxtFiles(currentIndustryDir);
@@ -200,7 +204,6 @@ public class Field {
 
             for (int j = 0; j < arraysAmount; j++) {
                 for (int k = 0; k < enterprisesAmount; k++) {
-
                     int curPrice = App.rand.Next(startPrice, startPrice + stepPrice);
                     startPrice += stepPrice;
                     curPrice = curPrice / 10 * 10;
@@ -238,6 +241,7 @@ public class Field {
             if (isUsed[curNum - begin]) {
                 continue;
             }
+
             ans.Add(curNum);
             isUsed[curNum - begin] = true;
         } while (ans.Count < amount);
@@ -252,7 +256,7 @@ public class Field {
         do {
             color = (ConsoleColor)(App.rand.Next(0, 16));
             isUnique = true;
-            
+
             foreach (var badColor in JustOutput.notGoodColorsForEnterprises) {
                 if (color == badColor) {
                     isUnique = false;
@@ -263,7 +267,7 @@ public class Field {
             if (!isUnique) {
                 continue;
             }
-            
+
             for (int i = 0; i < indexCurIndustry; i++) {
                 if (color == industriesArray[i].color) {
                     isUnique = false;
@@ -271,6 +275,7 @@ public class Field {
                 }
             }
         } while (!isUnique);
+
         return color;
     }
 }

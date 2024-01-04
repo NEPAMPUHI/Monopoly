@@ -11,10 +11,10 @@ public class GamePlay {
     private readonly int indexOfEndOfArray;
     private readonly int indexOfWorkCell;
     private readonly int enterOnArrayInAnother;
-    
-    
-    public static readonly int salary = 300;
-    public static readonly int startCapital = 500;
+
+
+    public static readonly int salary = 100;
+    public static readonly int startCapital = 300;
 
     public GamePlay() {
         RecreateField();
@@ -48,8 +48,9 @@ public class GamePlay {
             JustOutput.PrintAllField(field, playersInGame);
             curPlayer = playersInGame[curIndexPlayerTurn];
             PreTurnThings(curPlayer, playersInGame);
-            
-            messageToPrint = field.TakeCardByPlayerPos(curPlayer).DoActionIfStayed(field, curPlayer, out isNextMoveNeed);
+
+            messageToPrint = field.TakeCardByPlayerPos(curPlayer)
+                .DoActionIfStayed(field, curPlayer, out isNextMoveNeed);
             JustOutput.PrintText(messageToPrint);
 
             if (isNextMoveNeed) {
@@ -67,40 +68,41 @@ public class GamePlay {
                     JustOutput.Congratulations(playersInGame[0], field);
                 }
             }
+
             curIndexPlayerTurn = (curIndexPlayerTurn + 1) % playersInGame.Count;
 
             JustOutput.PrintText(OutputPhrases.TextPressEnterToGoNextPlayer());
             Interactive.PressEnter();
-            
-            
         }
     }
 
     private void PlayerTurnWithDice(Player player) {
         int curPlayerArr = player.positionInField.arrayIndex;
         int curPlayerCell = player.positionInField.cellIndex;
-        
+
         JustOutput.PrintText(OutputPhrases.TextRollDice(player));
         if (!player.IsABot()) {
             Interactive.PressEnter();
         }
+
         int randTurnsAmount = RollDice();
         JustOutput.PrintText(OutputPhrases.TextDiceNumber(randTurnsAmount));
 
         int newPlayerCell = curPlayerCell + randTurnsAmount;
-        
+
         if (curPlayerCell < indexOfWorkCell && newPlayerCell >= indexOfWorkCell) {
             JustOutput.PrintText(OutputPhrases.TextGainSalary(player, salary));
             player.moneyAmount += salary;
         }
-        
+
         if (curPlayerCell == indexOfEndOfCountry) {
             player.positionInField.cellIndex = newPlayerCell;
         }
         else if (curPlayerCell < indexOfEndOfCountry) {
             player.positionInField.cellIndex = newPlayerCell % (indexOfEndOfCountry + 1);
         }
-        else { // curPlayerCell > indexOfEndOfCountry
+        else {
+            // curPlayerCell > indexOfEndOfCountry
             if (newPlayerCell <= indexOfEndOfArray) {
                 player.positionInField.cellIndex = newPlayerCell;
             }
@@ -115,8 +117,9 @@ public class GamePlay {
         if (player.moneyAmount >= 0) {
             return false;
         }
+
         JustOutput.PrintText(OutputPhrases.TextYouMustPawnEnterprises());
-        
+
         List<Enterprise> enterprises = player.GetPawnedOrNotPlayerEnterprises(field, false);
         while (enterprises.Count > 0 && player.moneyAmount < 0) {
             JustOutput.PrintDebtAndUnPawnEnterprises(player, enterprises);
@@ -147,17 +150,21 @@ public class GamePlay {
         JustOutput.PrintPlayersInfo(playersInGame, field);
         PawnEnterpriseOrBuildHotel(player);
     }
+
     private void PawnEnterpriseOrBuildHotel(Player player) {
         List<Enterprise> notPawnedEnterprises = player.GetPawnedOrNotPlayerEnterprises(field, false);
         List<Enterprise> pawnedEnterprises = player.GetPawnedOrNotPlayerEnterprises(field, true);
         List<Enterprise> enterprisesToBuildHotel = player.GetFullIndustryWithoutNHotelsEnterprises(field);
         bool isContinue = true;
 
-        JustOutput.PrintText(OutputPhrases.TextPreTurnMainOutput(player, notPawnedEnterprises.Count, pawnedEnterprises.Count, enterprisesToBuildHotel.Count));
+        JustOutput.PrintText(OutputPhrases.TextPreTurnMainOutput(player, notPawnedEnterprises.Count,
+            pawnedEnterprises.Count, enterprisesToBuildHotel.Count));
 
         do {
             JustOutput.PrintText(OutputPhrases.TextGetNumOfPreTurnAction());
-            string actionNum = player.PawnEnterpriseOrBuildHotelPreTurn(notPawnedEnterprises, pawnedEnterprises, enterprisesToBuildHotel);
+            string actionNum =
+                player.PawnEnterpriseOrBuildHotelPreTurn(notPawnedEnterprises, pawnedEnterprises,
+                    enterprisesToBuildHotel);
             switch (actionNum) {
                 case "1":
                     if (notPawnedEnterprises.Count == 0) {
@@ -171,6 +178,7 @@ public class GamePlay {
                         notPawnedEnterprises[enterpriseNum].PawnInBank(field);
                         notPawnedEnterprises.RemoveAt(enterpriseNum);
                     }
+
                     break;
                 case "2":
                     if (pawnedEnterprises.Count == 0) {
@@ -189,6 +197,7 @@ public class GamePlay {
                             JustOutput.PrintText(OutputPhrases.TextNoMoneyForUnpawnOrBuild(true));
                         }
                     }
+
                     break;
                 case "3":
                     if (enterprisesToBuildHotel.Count == 0) {
@@ -207,6 +216,7 @@ public class GamePlay {
                             JustOutput.PrintText(OutputPhrases.TextNoMoneyForUnpawnOrBuild(false));
                         }
                     }
+
                     break;
                 default:
                     Console.WriteLine();

@@ -265,6 +265,10 @@ public static class OutputPhrases {
         return "На жаль, грошей для " + (isUnpawn ? "викупу" : "побудови готелю тут") + " не вистачає";
     }
 
+    public static string PlayerTurns(Player player) {
+        return player.nameInGame + " ходить.";
+    }
+
     //__________________________________________________________________________________________________________________________________________
     // Field
 
@@ -342,14 +346,14 @@ public static class OutputPhrases {
     
     public static string PrintCellTitleInAText(Card? card) {
         return (card is Enterprise enterprise) ? 
-            (enterprise.title + " (" + enterprise.industry.industryName + ")") : 
+            (enterprise.title) : 
             (MakeOneStringFromArray(card.TextToPrintInAField));
     }
 
     public static string GetCountryNameByPlayer(Field field, Player player) {
         string ans;
         if (player.positionInField == null) {
-            ans = "у місці, де пролягає кордон двох країн";
+            ans = "місці, де пролягає кордон двох країн";
         }
         else if (player.positionInField.cellIndex > field.specialIndexesByCellNames["ExitChance"]) {
             ans = "міжкраїнному просторі";

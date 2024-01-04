@@ -1,8 +1,10 @@
-namespace Monopoly.Cards; 
+namespace Monopoly.Cards;
+
 using OutputDesign;
 
 public class Start : Card {
     public int enterTnArrayAfterStart;
+
     public override string[] TextToPrintInAField {
         get { return OutputPhrases.outputTextByTags["Start"]; }
     }
@@ -14,14 +16,14 @@ public class Start : Card {
     public override string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
         return StartTurn(field, player, out isNextMoveNeed);
     }
-    
+
     private string StartTurn(Field field, Player player, out bool isNextMoveNeed) {
         isNextMoveNeed = true;
         enterTnArrayAfterStart = field.specialIndexesByCellNames["Bonus"] + 1;
-        
+
         player.positionInField = new Position();
         player.positionInField.cellIndex = enterTnArrayAfterStart - 1;
-        
+
         int countryIndex = Convert.ToInt32(GamePlay.RollCoin(50, 50));
         player.positionInField.arrayIndex = countryIndex;
         player.moneyAmount += GamePlay.startCapital;

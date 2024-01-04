@@ -1,17 +1,17 @@
 using Monopoly.OutputDesign;
 
-namespace Monopoly.Cards; 
+namespace Monopoly.Cards;
 
 public class Prison : Card {
-
     private const int startTurnsToGoOut = 3;
-    private const int startPriceToPay = 300;
-    private const int additionPriceForEachTurn = 100;
+    private const int startPriceToPay = 100;
+    private const int additionPriceForEachTurn = 50;
 
 
     public override string[] TextToPrintInAField {
         get { return OutputPhrases.outputTextByTags["Prison"]; }
     }
+
     public override string DoActionIfArrived(Field field, Player player) {
         return SendPlayerToPrison(player);
     }
@@ -21,7 +21,8 @@ public class Prison : Card {
     }
 
     public bool IsPayedForFreedom(Player player, int turnsToGoOut) {
-        int priceToPay = (startPriceToPay + turnsToGoOut * additionPriceForEachTurn) * (player.howManyTimesPayedInPrison + 1);
+        int priceToPay = (startPriceToPay + turnsToGoOut * additionPriceForEachTurn) *
+                         (player.howManyTimesPayedInPrison + 1);
 
         JustOutput.PrintText(OutputPhrases.TextIsPayedForFreedom(priceToPay));
         string choice = player.PayToGoOutOfPrisonOrNot();
@@ -32,21 +33,19 @@ public class Prison : Card {
                 player.moneyAmount -= priceToPay;
                 return true;
             }
-            else {
-                JustOutput.PrintText(OutputPhrases.TextBuyFreedomOrNot(player, false));
-                return false;
-            }
-        }
-        else {
-            JustOutput.PrintText(OutputPhrases.TextGoOutOfPrisonOrNot(player, false));
+
+            JustOutput.PrintText(OutputPhrases.TextBuyFreedomOrNot(player, false));
             return false;
         }
+
+        JustOutput.PrintText(OutputPhrases.TextGoOutOfPrisonOrNot(player, false));
+        return false;
     }
 
     private string CanPlayerGoOut(Player player, out bool isNextMoveNeed) {
         string msgToReturn;
         isNextMoveNeed = false;
-        
+
         player.turnsToGoOutOfPrison--;
         int turnsLeft = player.turnsToGoOutOfPrison;
         if (turnsLeft == 0) {

@@ -13,14 +13,11 @@ public static class Interactive {
     private static readonly int maxPlayersAmount = 4;
     private static readonly int maxPlayerNameLength = 11;
 
-    public static string GetPersonChoice(List<string> inputVariants)
-    {
+    public static string GetPersonChoice(List<string> inputVariants) {
         string? strToReturn = null;
 
-        do
-        {
-            if (strToReturn != null)
-            {
+        do {
+            if (strToReturn != null) {
                 Console.WriteLine("Спробуйте ще раз ^_^\n");
             }
 
@@ -30,7 +27,7 @@ public static class Interactive {
 
         return strToReturn;
     }
-    
+
     public static void PressEnter() {
         Console.ReadLine();
     }
@@ -56,6 +53,7 @@ public static class Interactive {
 
         return name;
     }
+
     public static string[] InputPlayersNamesToPlay() {
         bool isContinue = true;
         int playersAmount = 0;
@@ -73,6 +71,7 @@ public static class Interactive {
                     if (playersAmount == maxPlayersAmount) {
                         isContinue = false;
                     }
+
                     break;
                 case "0":
                     if (playersAmount < minPlayersAmount) {
@@ -81,6 +80,7 @@ public static class Interactive {
                     else {
                         isContinue = false;
                     }
+
                     break;
                 default:
                     Console.WriteLine("Спробуйте ще раз ^_^\n");
@@ -125,19 +125,14 @@ public static class Interactive {
         return name;
     }
 
-    private static bool IsExistInList(string strToCheck, List<string> inputVariants)
-    {
+    private static bool IsExistInList(string strToCheck, List<string> inputVariants) {
         bool isCorrect = false;
-        foreach (var str in inputVariants)
-        {
-            if (strToCheck == str)
-            {
+        foreach (var str in inputVariants) {
+            if (strToCheck == str) {
                 return true;
             }
         }
+
         return false;
     }
-
-
 }
-

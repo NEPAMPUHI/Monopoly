@@ -45,17 +45,17 @@ public class Enterprise : Card {
     }
 
     public override string[] TextToPrintInAField {
-        get { return textToShow; } 
+        get { return textToShow; }
     }
-    
+
     public override string DoActionIfArrived(Field field, Player player) {
         return PayBuyOrStay(field, player);
     }
 
     public override string DoActionIfStayed(Field field, Player player, out bool isNextMoveNeed) {
-        return JustTurn(field, player, out isNextMoveNeed);
+        return JustTurn(player, out isNextMoveNeed);
     }
-    
+
     public void PawnInBank(Field field) {
         owner.moneyAmount += currentPriceOthersPay;
         JustOutput.PrintText(OutputPhrases.TextPawnInBank(this));
@@ -77,7 +77,8 @@ public class Enterprise : Card {
         return turnsToDisappearIfPawned > 0;
     }
 
-    public void ClearEnterprise() { // Tut?
+    public void ClearEnterprise() {
+        // Tut?
         owner = null;
         turnsToDisappearIfPawned = 0;
         isBuiltHotel = false;
@@ -150,6 +151,7 @@ public class Enterprise : Card {
         isFullIndustry = true;
         UpdateTextToShow();
     }
+
     private void UpdateIfDestroyedIndustry() {
         currentPriceOthersPay = priceOthersPayLevel1;
         isBuiltHotel = false;

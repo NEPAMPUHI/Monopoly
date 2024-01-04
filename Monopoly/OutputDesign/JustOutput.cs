@@ -4,17 +4,19 @@ using System.Runtime.CompilerServices;
 
 namespace Monopoly.OutputDesign;
 
-public static class JustOutput { // Максимум в ширину — 186 символів
+public static class JustOutput {
+    // Максимум в ширину — 186 символів
     public static readonly int maxCellsInOneLine = 8;
     public static readonly int maxSymbolsInOneCell = 15;
     public static readonly int screenWidth = 186;
-    public static readonly List<ConsoleColor> notGoodColorsForEnterprises = new () {
+
+    public static readonly List<ConsoleColor> notGoodColorsForEnterprises = new() {
         ConsoleColor.Black,
         ConsoleColor.DarkGray,
         ConsoleColor.Gray
     };
-    
-    public static readonly List<ConsoleColor> notGoodColorsForPlayers = new () {
+
+    public static readonly List<ConsoleColor> notGoodColorsForPlayers = new() {
         ConsoleColor.Black,
         ConsoleColor.Gray,
         ConsoleColor.White,
@@ -47,8 +49,10 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                     Console.Write(new string(' ', freeSpace - freeSpace / 2));
                     Console.Write("| ");
                 }
+
                 Console.Write("\n");
             }
+
             Console.WriteLine(OutputPhrases.CurWideLine(Math.Min(curBoard, maxCellsInOneLine), true));
             Console.WriteLine();
         }
@@ -76,6 +80,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
             Console.WriteLine(OutputPhrases.TextPlayerInfo(player, field));
             PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
         }
+
         Console.WriteLine();
     }
 
@@ -89,6 +94,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         for (int i = start; i < end + 1; i++) {
             list.Add(Convert.ToString(i));
         }
+
         return list;
     }
 
@@ -115,7 +121,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         List<List<int>> positions = new List<List<int>>();
         List<List<Player>> playersOnPositions = new List<List<Player>>();
         PlayersPlacesInField(ref positions, ref playersOnPositions, players);
-    
+
         Console.Write(" ");
         foreach (var list in fieldIndexes[0]) {
             if (OutputPhrases.IsNotBoard(list)) {
@@ -124,8 +130,10 @@ public static class JustOutput { // Максимум в ширину — 186 с�
             else {
                 Console.Write(new string('_', cellWidth));
             }
+
             Console.Write(" ");
         }
+
         Thread.Sleep(sleepTime);
         Console.WriteLine();
         for (int l = 0; l < fieldIndexes.Length; l++) {
@@ -136,6 +144,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                 else {
                     Console.Write("|");
                 }
+
                 for (int k = 0; k < fieldIndexes[l].Length; k++) {
                     PrintOneStringInCell(field, fieldIndexes[l][k], i);
                     if (!OutputPhrases.IsNotBoard(fieldIndexes[l][k])) {
@@ -148,15 +157,18 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                         Console.Write(" ");
                     }
                 }
+
                 Thread.Sleep(sleepTime);
                 Console.WriteLine();
             }
+
             if (OutputPhrases.IsNotBoard(fieldIndexes[l][0])) {
                 Console.Write(" ");
             }
             else {
                 Console.Write("|");
             }
+
             for (int i = 0; i < fieldIndexes[l].Length; i++) {
                 if (OutputPhrases.IsNotBoard(fieldIndexes[l][i]) &&
                     (l == fieldIndexes.Length - 1 || OutputPhrases.IsNotBoard(fieldIndexes[l + 1][i]))) {
@@ -171,7 +183,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                         Console.Write(new string('_', cellWidth));
                     }
                 }
-                
+
                 if (!OutputPhrases.IsNotBoard(fieldIndexes[l][i])) {
                     Console.Write("|");
                 }
@@ -182,6 +194,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                     Console.Write(" ");
                 }
             }
+
             Thread.Sleep(sleepTime);
             Console.WriteLine();
         }
@@ -189,7 +202,8 @@ public static class JustOutput { // Максимум в ширину — 186 с�
 
     public static void PrintOneStringInCell(Field field, List<int> cellIndexes, int stringIndex) {
         string[] stringText = OutputPhrases.GetCellText(field, cellIndexes);
-        if (cellIndexes[0] == 1 && cellIndexes[1] != -1 && field.fieldArrays[cellIndexes[1]][cellIndexes[2]] is Enterprise enterprise) {
+        if (cellIndexes[0] == 1 && cellIndexes[1] != -1 &&
+            field.fieldArrays[cellIndexes[1]][cellIndexes[2]] is Enterprise enterprise) {
             if (stringIndex == 0) {
                 ConsoleColor backColor = Console.BackgroundColor;
                 ConsoleColor foreColor = Console.ForegroundColor;
@@ -200,6 +214,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                 Console.ForegroundColor = foreColor;
                 return;
             }
+
             if (stringIndex == 3 && enterprise.owner != null) {
                 ConsoleColor foreColor = Console.ForegroundColor;
                 Console.ForegroundColor = enterprise.owner.chipColor;
@@ -208,10 +223,12 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                 return;
             }
         }
+
         Console.Write(stringText[stringIndex]);
     }
 
-    private static void PlayersPlacesInField(ref List<List<int>> positions, ref List<List<Player>> playersOnPositions, List<Player> players) {
+    private static void PlayersPlacesInField(ref List<List<int>> positions, ref List<List<Player>> playersOnPositions,
+        List<Player> players) {
         foreach (var player in players) {
             List<int> list = new List<int> {
                 1,
@@ -225,7 +242,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
             }
             else {
                 positions.Add(list);
-                playersOnPositions.Add( new List<Player> {player});
+                playersOnPositions.Add(new List<Player> { player });
             }
         }
     }
@@ -237,6 +254,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                 return i;
             }
         }
+
         return -1;
     }
 
@@ -244,11 +262,13 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         if (fList.Count != sList.Count) {
             return false;
         }
+
         for (int i = 0; i < fList.Count; i++) {
             if (fList[i] != sList[i]) {
                 return false;
             }
         }
+
         return true;
     }
 
@@ -259,12 +279,12 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         if (playersAmount > 1) {
             betweenSpace = freeSpace / (playersAmount + 1);
         }
-        
+
         int leftSpace = (cellWidth - (betweenSpace * (playersAmount - 1) + chipWidth * playersAmount)) / 2;
         int rightSpace = cellWidth - (leftSpace + betweenSpace * (playersAmount - 1) + chipWidth * playersAmount);
 
         ConsoleColor back = Console.BackgroundColor;
-        
+
         Console.Write(new string('_', leftSpace));
 
         bool isFirst = true;
@@ -272,6 +292,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
             if (!isFirst) {
                 Console.Write(new string('_', betweenSpace));
             }
+
             Console.BackgroundColor = player.chipColor;
             Console.Write(new string('_', chipWidth));
             Console.BackgroundColor = back;

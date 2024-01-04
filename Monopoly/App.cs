@@ -1,9 +1,10 @@
 using System.Text;
-namespace Monopoly; 
+
+namespace Monopoly;
 
 public class App {
     private static App instance;
-    public static readonly Random rand = new ();
+    public static readonly Random rand = new();
     private readonly MainMenu inMenu;
 
     private App() {
@@ -14,8 +15,10 @@ public class App {
         if (instance == null) {
             instance = new App();
         }
+
         return instance;
     }
+
     public void Run() {
         var shouldContinue = true;
         while (shouldContinue) {
