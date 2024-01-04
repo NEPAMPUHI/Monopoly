@@ -5,11 +5,7 @@ using Monopoly.OutputDesign;
 namespace Monopoly;
 
 public class MainMenu {
-    private readonly GamePlay game;
-
-    public MainMenu() {
-        game = new GamePlay();
-    }
+    private readonly GamePlay game = new ();
     
     internal void DisplayMenu() {
         JustOutput.PrintText(OutputPhrases.TextMainMenu());
@@ -33,7 +29,7 @@ public class MainMenu {
     private void PlayWithComputer() {
         string playerName = Interactive.InputYourName();
 
-        int botsAmount = 2;
+        int botsAmount = 3;
         string[] botsNames = GenerateNamesForBots(botsAmount);
         ConsoleColor[] playerColors = ChooseColorForEach(botsAmount + 1);
         
@@ -80,7 +76,7 @@ public class MainMenu {
                 continue;
             }
             
-            foreach (var badColor in JustOutput.notGoodColors) {
+            foreach (var badColor in JustOutput.notGoodColorsForPlayers) {
                 if ((ConsoleColor)curColorIndex == badColor) {
                     curColorIndex = -1;
                     break;

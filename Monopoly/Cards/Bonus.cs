@@ -1,5 +1,5 @@
 namespace Monopoly.Cards;
-using Monopoly.OutputDesign;
+using OutputDesign;
 
 public class Bonus : Card {
     private delegate string Action(Field field, Player player);

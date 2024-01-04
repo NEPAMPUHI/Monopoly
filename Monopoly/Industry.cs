@@ -6,14 +6,11 @@ public class Industry {
     public List<Position> enterprisesIndexes;
     public string industryName;
     public ConsoleColor color;
-    public bool isFull;
 
-    public Industry(List<Position> enterprisesIndexes, string industryName, ConsoleColor color = ConsoleColor.Cyan,
-        bool isFull = false) {
+    public Industry(List<Position> enterprisesIndexes, string industryName, ConsoleColor color) {
         this.color = color;
         this.enterprisesIndexes = enterprisesIndexes;
         this.industryName = industryName;
-        this.isFull = isFull;
     }
 
     public List<Enterprise> GetEnterprisesInIndustry(Field field) {

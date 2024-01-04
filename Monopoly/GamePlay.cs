@@ -11,10 +11,10 @@ public class GamePlay {
     private readonly int indexOfEndOfArray;
     private readonly int indexOfWorkCell;
     private readonly int enterOnArrayInAnother;
-    private readonly int enterTnArrayAfterStart;
-
-    private const int salary = 500;
-    private const int startCapital = 1000;
+    
+    
+    public static readonly int salary = 300;
+    public static readonly int startCapital = 500;
 
     public GamePlay() {
         RecreateField();
@@ -22,7 +22,6 @@ public class GamePlay {
         indexOfEndOfArray = field.fieldArrays[0].Length - 1;
         indexOfWorkCell = field.specialIndexesByCellNames["Work"];
         enterOnArrayInAnother = indexOfWorkCell;
-        enterTnArrayAfterStart = field.specialIndexesByCellNames["Bonus"] + 1;
     }
 
     public void RecreateField() {
@@ -33,8 +32,8 @@ public class GamePlay {
         return App.rand.Next(1, 7);
     }
 
-    public static bool RollCoin() {
-        return Convert.ToBoolean(App.rand.Next(0, 2));
+    public static bool RollCoin(int trueProbability, int falseProbability) {
+        return App.rand.Next(0, trueProbability + falseProbability) - trueProbability < 0;
     }
 
     public void StartGame(Player[] players) {
@@ -50,9 +49,7 @@ public class GamePlay {
             curPlayer = playersInGame[curIndexPlayerTurn];
             PreTurnThings(curPlayer, playersInGame);
             
-            messageToPrint = (curPlayer.positionInField == null)
-                ? StartTurn(curPlayer, out isNextMoveNeed)
-                : field.TakeCardByPlayerPos(curPlayer).DoActionIfStayed(field, curPlayer, out isNextMoveNeed);
+            messageToPrint = field.TakeCardByPlayerPos(curPlayer).DoActionIfStayed(field, curPlayer, out isNextMoveNeed);
             JustOutput.PrintText(messageToPrint);
 
             if (isNextMoveNeed) {
@@ -77,17 +74,6 @@ public class GamePlay {
             
             
         }
-    }
-
-    private string StartTurn(Player player, out bool isNextMoveNeed) {
-        isNextMoveNeed = true;
-        player.positionInField = new Position();
-        player.positionInField.cellIndex = enterTnArrayAfterStart - 1;
-        
-        int countryIndex = Convert.ToInt32(RollCoin());
-        player.positionInField.arrayIndex = countryIndex;
-        player.moneyAmount += startCapital;
-        return OutputPhrases.TextStartTurn(player, field, startCapital);
     }
 
     private void PlayerTurnWithDice(Player player) {

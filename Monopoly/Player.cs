@@ -16,9 +16,8 @@ public class Player {
     public int howManyTimesWorked;
     public AIBot? playerAI;
 
-    public Player(string nameInGame, AIBot? playerAI = null,
-        ConsoleColor chipColor = ConsoleColor.White, int moneyAmount = 0, Position? positionInField = null,
-        int turnsToGoOutOfPrison = 0, int howManyTimesPayedInPrison = 0,
+    public Player(string nameInGame, AIBot? playerAI, ConsoleColor chipColor, int moneyAmount = 0, 
+        Position? positionInField = null, int turnsToGoOutOfPrison = 0, int howManyTimesPayedInPrison = 0,
         bool canGoOutOfCountry = false, int turnsCanContinueWork = 0, int howManyTimesWorked = 0) {
         this.nameInGame = nameInGame;
         this.playerAI = playerAI;

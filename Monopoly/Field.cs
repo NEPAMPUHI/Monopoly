@@ -5,6 +5,7 @@ namespace Monopoly;
 
 public class Field {
     public Card[][] fieldArrays;
+    public Card startCell;
     public Industry[] industriesArray;
     public string[] countriesArray;
 
@@ -62,6 +63,7 @@ public class Field {
         for (int i = 0; i < countriesAmount; i++) {
             fieldArrays[i] = new Card[arrayLength];
         }
+        startCell = new Start();
 
         countriesArray = new string[countriesAmount];
         int industriesArrLength = (countryIndustriesIndexes.Length + privateIndustriesForEach.Length) * 2 +
@@ -78,8 +80,8 @@ public class Field {
         NonEnterprisesCardFill();
     }
 
-    public Card? TakeCardByPlayerPos(Player player) {
-        return player.positionInField == null ? null : fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
+    public Card TakeCardByPlayerPos(Player player) {
+        return player.positionInField == null ? startCell : fieldArrays[player.positionInField.arrayIndex][player.positionInField.cellIndex];
     }
 
     private void NonEnterprisesCardFill() {
@@ -244,14 +246,14 @@ public class Field {
     }
 
     private ConsoleColor UniqueColorForIndustry(int indexCurIndustry) {
-        ConsoleColor color = ConsoleColor.Black;
-        bool isUnique = false;
+        ConsoleColor color;
+        bool isUnique;
 
         do {
             color = (ConsoleColor)(App.rand.Next(0, 16));
             isUnique = true;
             
-            foreach (var badColor in JustOutput.notGoodColors) {
+            foreach (var badColor in JustOutput.notGoodColorsForEnterprises) {
                 if (color == badColor) {
                     isUnique = false;
                     break;

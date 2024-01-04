@@ -1,11 +1,4 @@
-﻿using Monopoly;
-using Monopoly.Cards;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Monopoly.Cards;
 
 namespace Monopoly.OutputDesign;
 public static class OutputPhrases {
@@ -13,7 +6,7 @@ public static class OutputPhrases {
     //__________________________________________________________________________________________________________________________________________
     // CARDS
 
-    public static readonly Dictionary<string, string[]> outputTextByTags = new Dictionary<string, string[]>() {
+    public static readonly Dictionary<string, string[]> outputTextByTags = new () {
         {"Bonus", new string[] {"БОНУС"} },
         {"Zrada", new string[] { "ЗРАДА" }},
         {"Work", new string[] { "РОБОТА" }},
@@ -149,6 +142,10 @@ public static class OutputPhrases {
             player.nameInGame + " вирішив продовжувати відбувати покарання";
     }
 
+    public static string MovedToStart(Player player) {
+        return player.nameInGame + " переміщується на поле " + outputTextByTags["Start"];
+    }
+
     //__________________________________________________________________________________________________________________________________________
     // Menu
 
@@ -280,7 +277,8 @@ public static class OutputPhrases {
         new [] { nL(1, 0, 11), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 0, 5), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(0, 0, 0), nL(1, 1, 15) },
         new [] { nL(1, 0, 10), nL(1, 0, 9), nL(1, 0, 8), nL(1, 0, 7), nL(1, 0, 6), nL(1, 1, 20), nL(1, 1, 19), nL(1, 1, 18), nL(1, 1, 17), nL(1, 1, 16), nL(0, 0, 0) }
     };
-    public static readonly int cellHeight = (new Enterprise(0, new Industry(new List<Position>(), ""), "")).TextToPrintInAField.Length;
+    public static readonly int cellHeight = (new Enterprise(0, 
+        new Industry(new List<Position>(), "", 0), "")).TextToPrintInAField.Length;
     public static readonly int maxCellWidth = 15;
 
     private static List<int> nL(params int[] nums) {
@@ -299,7 +297,7 @@ public static class OutputPhrases {
         if (indexes[0] == 1) {
             string[] cardText = new string[1];
             if (indexes[1] == -1) {
-                cardText = outputTextByTags["Start"];
+                cardText = field.startCell.TextToPrintInAField;
             }
             else {
                 cardText = field.fieldArrays[indexes[1]][indexes[2]].TextToPrintInAField;
@@ -343,17 +341,15 @@ public static class OutputPhrases {
     }
     
     public static string PrintCellTitleInAText(Card? card) {
-        return ((card is null) ?
-            (outputTextByTags["Start"][0]) :
-            ((card is Enterprise enterprise) ? 
+        return (card is Enterprise enterprise) ? 
             (enterprise.title + " (" + enterprise.industry.industryName + ")") : 
-            (MakeOneStringFromArray(card.TextToPrintInAField))));
+            (MakeOneStringFromArray(card.TextToPrintInAField));
     }
 
     public static string GetCountryNameByPlayer(Field field, Player player) {
         string ans;
         if (player.positionInField == null) {
-            ans = "космосі";
+            ans = "у місці, де пролягає кордон двох країн";
         }
         else if (player.positionInField.cellIndex > field.specialIndexesByCellNames["ExitChance"]) {
             ans = "міжкраїнному просторі";
@@ -370,7 +366,7 @@ public static class OutputPhrases {
         string strToDuplicate = "";
 
         strToDuplicate += withSideBoards ? '|' : ' ';
-        strToDuplicate += new string('_', JustOutput.maxSymbolsInOneCell + 2);
+        strToDuplicate += new string('_', JustOutput.maxSymbolsInOneCell);
         strToDuplicate += withSideBoards ? '|' : ' ';
         strToDuplicate += ' ';
 

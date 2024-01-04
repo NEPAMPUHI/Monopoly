@@ -2,11 +2,19 @@ using System.Text;
 namespace Monopoly; 
 
 public class App {
-    public static readonly Random rand = new Random();
+    private static App instance;
+    public static readonly Random rand = new ();
     private readonly MainMenu inMenu;
 
-    public App() {
+    private App() {
         inMenu = new MainMenu();
+    }
+
+    public static App GetInstance() {
+        if (instance == null) {
+            instance = new App();
+        }
+        return instance;
     }
     public void Run() {
         var shouldContinue = true;

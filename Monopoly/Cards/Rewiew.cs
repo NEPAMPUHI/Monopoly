@@ -15,7 +15,7 @@ public class Rewiew : Card {
     }
 
     private string GoToPrisonOrNot(Field field, Player player) {
-        bool isGoToPrison = GamePlay.RollCoin();
+        bool isGoToPrison = GamePlay.RollCoin(20, 80);
 
         if (!isGoToPrison) {
             return OutputPhrases.TextGoToPrisonOrNot(player, isGoToPrison);

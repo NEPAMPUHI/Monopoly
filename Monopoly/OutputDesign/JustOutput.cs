@@ -6,12 +6,25 @@ namespace Monopoly.OutputDesign;
 
 public static class JustOutput { // Максимум в ширину — 186 символів
     public static readonly int maxCellsInOneLine = 8;
-    public static readonly int maxSymbolsInOneCell = 16;
+    public static readonly int maxSymbolsInOneCell = 15;
     public static readonly int screenWidth = 186;
-    public static readonly List<ConsoleColor> notGoodColors = new List<ConsoleColor> {
+    public static readonly List<ConsoleColor> notGoodColorsForEnterprises = new () {
         ConsoleColor.Black,
         ConsoleColor.DarkGray,
         ConsoleColor.Gray
+    };
+    
+    public static readonly List<ConsoleColor> notGoodColorsForPlayers = new () {
+        ConsoleColor.Black,
+        ConsoleColor.Gray,
+        ConsoleColor.White,
+        ConsoleColor.DarkGray,
+        ConsoleColor.DarkBlue,
+        ConsoleColor.DarkGreen,
+        ConsoleColor.DarkYellow,
+        ConsoleColor.DarkRed,
+        ConsoleColor.DarkMagenta,
+        ConsoleColor.DarkCyan,
     };
 
     public static void PrintAListOfEnterprisesInOneLine(List<Enterprise> enterprises) {
@@ -28,35 +41,16 @@ public static class JustOutput { // Максимум в ширину — 186 с�
             for (int h = 0; h < enterprisesInLines[0].Length; h++) {
                 for (int k = 0; k < curBoard; k++) {
                     int freeSpace = maxSymbolsInOneCell - enterprisesInLines[k + i][h].Length;
-                    Console.Write("| ");
+                    Console.Write("|");
                     Console.Write(new string(' ', freeSpace / 2));
                     Console.Write(enterprisesInLines[k + i][h]);
                     Console.Write(new string(' ', freeSpace - freeSpace / 2));
-                    Console.Write(" | ");
+                    Console.Write("| ");
                 }
                 Console.Write("\n");
             }
             Console.WriteLine(OutputPhrases.CurWideLine(Math.Min(curBoard, maxCellsInOneLine), true));
             Console.WriteLine();
-        }
-    }
-
-    public static void PrintAllIndustries(Field field) {
-        foreach (var industry in field.industriesArray) {
-            Console.WriteLine("Назва індустрії: " + industry.industryName);
-            foreach (var pos in industry.enterprisesIndexes) {
-                Console.WriteLine("------------------------------");
-                PrintACell(field.fieldArrays[pos.arrayIndex][pos.cellIndex]);
-            }
-            Console.WriteLine("------------------------------");
-            Console.WriteLine("______________________________________________________________________\n");
-        }
-    }
-
-    private static void PrintACell(Card cell) {
-        for (int i = 0; i < cell.TextToPrintInAField.Length; i++) {
-            Console.Write("    ");
-            Console.WriteLine(cell.TextToPrintInAField[i]);
         }
     }
 
@@ -135,10 +129,6 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         Thread.Sleep(sleepTime);
         Console.WriteLine();
         for (int l = 0; l < fieldIndexes.Length; l++) {
-            string[][] curListCells = new string[fieldIndexes[l].Length][];
-            for (int i = 0; i < fieldIndexes[l].Length; i++) {
-                curListCells[i] = OutputPhrases.GetCellText(field, fieldIndexes[l][i]);
-            }
             for (int i = 0; i < cellHeight; i++) {
                 if (OutputPhrases.IsNotBoard(fieldIndexes[l][0])) {
                     Console.Write(" ");
@@ -147,7 +137,6 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                     Console.Write("|");
                 }
                 for (int k = 0; k < fieldIndexes[l].Length; k++) {
-                    //Console.Write(curListCells[k][i]);
                     PrintOneStringInCell(field, fieldIndexes[l][k], i);
                     if (!OutputPhrases.IsNotBoard(fieldIndexes[l][k])) {
                         Console.Write("|");
@@ -200,18 +189,26 @@ public static class JustOutput { // Максимум в ширину — 186 с�
 
     public static void PrintOneStringInCell(Field field, List<int> cellIndexes, int stringIndex) {
         string[] stringText = OutputPhrases.GetCellText(field, cellIndexes);
-        if (cellIndexes[0] == 1 && stringIndex == 0 && cellIndexes[1] != -1 && field.fieldArrays[cellIndexes[1]][cellIndexes[2]] is Enterprise enterprise) {
-            ConsoleColor backColor = Console.BackgroundColor;
-            ConsoleColor foreColor = Console.ForegroundColor;
-            Console.BackgroundColor = enterprise.industry.color;
-            Console.ForegroundColor = ConsoleColor.Black;
-            Console.Write(stringText[stringIndex]);
-            Console.BackgroundColor = backColor;
-            Console.ForegroundColor = foreColor;
+        if (cellIndexes[0] == 1 && cellIndexes[1] != -1 && field.fieldArrays[cellIndexes[1]][cellIndexes[2]] is Enterprise enterprise) {
+            if (stringIndex == 0) {
+                ConsoleColor backColor = Console.BackgroundColor;
+                ConsoleColor foreColor = Console.ForegroundColor;
+                Console.BackgroundColor = enterprise.industry.color;
+                Console.ForegroundColor = ConsoleColor.Black;
+                Console.Write(stringText[stringIndex]);
+                Console.BackgroundColor = backColor;
+                Console.ForegroundColor = foreColor;
+                return;
+            }
+            if (stringIndex == 3 && enterprise.owner != null) {
+                ConsoleColor foreColor = Console.ForegroundColor;
+                Console.ForegroundColor = enterprise.owner.chipColor;
+                Console.Write(stringText[stringIndex]);
+                Console.ForegroundColor = foreColor;
+                return;
+            }
         }
-        else {
-            Console.Write(stringText[stringIndex]);
-        }
+        Console.Write(stringText[stringIndex]);
     }
 
     private static void PlayersPlacesInField(ref List<List<int>> positions, ref List<List<Player>> playersOnPositions, List<Player> players) {

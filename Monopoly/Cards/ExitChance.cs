@@ -27,7 +27,7 @@ public class ExitChance : Card {
     }
 
     private string GuessIsGoOut(Player player) {
-        bool isGoOut = GamePlay.RollCoin();
+        bool isGoOut = GamePlay.RollCoin(80, 20);
         player.canGoOutOfCountry = isGoOut;
         return OutputPhrases.TextGuessIsGoOut(player);
     }

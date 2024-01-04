@@ -9,7 +9,7 @@ class Program {
         Console.OutputEncoding = Encoding.UTF8;
         Console.InputEncoding = Encoding.GetEncoding(1251);
 
-        App app = new App();
+        App app = App.GetInstance();
         app.Run();
     }
 }
