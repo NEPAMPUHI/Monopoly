@@ -58,19 +58,19 @@ public static class JustOutput {
         }
     }
 
-    public static void PrintText(string textToPrint) {
+    internal static void PrintText(string textToPrint) {
         Thread.Sleep(200);
         Console.WriteLine(textToPrint);
     }
 
-    public static void Congratulations(Player player, Field field) {
+    internal static void Congratulations(Player player, Field field) {
         Console.WriteLine("\n" + new string('-', screenWidth));
         Console.WriteLine(OutputPhrases.TextPlayerGreetings(player));
         PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
         Console.WriteLine(new string('-', screenWidth) + "\n");
     }
 
-    public static void PrintPlayersInfo(List<Player> playersInGame, Field field) {
+    internal static void PrintPlayersInfo(List<Player> playersInGame, Field field) {
         Console.WriteLine();
         foreach (var player in playersInGame) {
             ConsoleColor fore = Console.ForegroundColor;
@@ -84,12 +84,12 @@ public static class JustOutput {
         Console.WriteLine();
     }
 
-    public static void PrintDebtAndUnPawnEnterprises(Player player, List<Enterprise> enterprises) {
+    internal static void PrintDebtAndUnPawnEnterprises(Player player, List<Enterprise> enterprises) {
         Console.WriteLine(OutputPhrases.TextDebtAndEnter(player));
         PrintAListOfEnterprisesInOneLine(enterprises);
     }
 
-    public static List<string> MakeAListFromDiapasone(int start, int end) {
+    internal static List<string> MakeAListFromDiapasone(int start, int end) {
         List<string> list = new List<string>();
         for (int i = start; i < end + 1; i++) {
             list.Add(Convert.ToString(i));
@@ -98,7 +98,7 @@ public static class JustOutput {
         return list;
     }
 
-    public static void PrintEnterprises(List<Enterprise> enterprises, string tag) {
+    internal static void PrintEnterprises(List<Enterprise> enterprises, string tag) {
         Console.WriteLine(tag switch {
             "notPawned" => OutputPhrases.TextUnPawnedOrPawnedEnterprises(false),
             "pawned" => OutputPhrases.TextUnPawnedOrPawnedEnterprises(true),
@@ -108,7 +108,7 @@ public static class JustOutput {
         PrintAListOfEnterprisesInOneLine(enterprises);
     }
 
-    public static void PrintMyChoice() {
+    internal static void PrintMyChoice() {
         Console.Write("Мій вибір: ");
     }
 

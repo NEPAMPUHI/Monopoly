@@ -5,16 +5,16 @@ using Monopoly.OutputDesign;
 namespace Monopoly;
 
 public class Player {
-    public readonly string nameInGame;
-    public readonly ConsoleColor chipColor;
-    public int moneyAmount;
-    public Position? positionInField;
-    public int turnsToGoOutOfPrison;
-    public int howManyTimesPayedInPrison;
-    public bool canGoOutOfCountry;
-    public int turnsCanContinueWork;
-    public int howManyTimesWorked;
-    public AIBot? playerAI;
+    internal readonly string nameInGame;
+    internal readonly ConsoleColor chipColor;
+    internal int moneyAmount;
+    internal Position? positionInField;
+    internal int turnsToGoOutOfPrison;
+    internal int howManyTimesPayedInPrison;
+    internal bool canGoOutOfCountry;
+    internal int turnsCanContinueWork;
+    internal int howManyTimesWorked;
+    private AIBot? playerAI;
 
     public Player(string nameInGame, AIBot? playerAI, ConsoleColor chipColor, int moneyAmount = 0,
         Position? positionInField = null, int turnsToGoOutOfPrison = 0, int howManyTimesPayedInPrison = 0,
