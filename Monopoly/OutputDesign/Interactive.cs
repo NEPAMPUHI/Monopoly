@@ -11,7 +11,7 @@ namespace Monopoly.OutputDesign;
 public static class Interactive {
     private static readonly int minPlayersAmount = 2;
     private static readonly int maxPlayersAmount = 4;
-    private static readonly int maxPlayerNameLength = 15;
+    private static readonly int maxPlayerNameLength = 11;
 
     public static string GetPersonChoice(List<string> inputVariants)
     {

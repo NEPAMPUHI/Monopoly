@@ -4,14 +4,6 @@ using Monopoly.OutputDesign;
 
 namespace Monopoly;
 
-// ConsoleColor defaltColor = Console.ForegroundColor;
-// Console.WriteLine("Чудово! Ось ваш список гравців:");
-// for (int i = 0; i < players.Length; i++) {
-//     Console.Write($"Гравець {i + 1}: ");
-//     Console.ForegroundColor = players[i].chipColor;
-//     Console.WriteLine(players[i].nameInGame);
-//     Console.ForegroundColor = defaltColor;
-// }
 public class MainMenu {
     private readonly GamePlay game;
 
@@ -83,6 +75,18 @@ public class MainMenu {
                     curColorIndex = -1;
                 }
             }
+            
+            if (curColorIndex == -1) {
+                continue;
+            }
+            
+            foreach (var badColor in JustOutput.notGoodColors) {
+                if ((ConsoleColor)curColorIndex == badColor) {
+                    curColorIndex = -1;
+                    break;
+                }
+            }
+            
             if (curColorIndex != -1) {
                 colorIndexes[curIndex] = curColorIndex;
                 curIndex++;

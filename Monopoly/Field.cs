@@ -1,4 +1,5 @@
 using Monopoly.Cards;
+using Monopoly.OutputDesign;
 
 namespace Monopoly;
 
@@ -44,11 +45,14 @@ public class Field {
         new[] { 7, 8, 10 }
     };
 
-    private readonly int[][] commonIndustriesForEach = {
-        new[] { 16, 18 },
+    private readonly int[][] commonIndustriesForEachFourEnters = {
+        new[] { 16, 18 }
+    };
+    
+    private readonly int[][] commonIndustriesForEachTwoEnters = {
         new[] { 20 }
     };
-
+    
     private readonly int[][] privateIndustriesForEach = {
         new[] { 14, 15, 19 }
     };
@@ -61,7 +65,7 @@ public class Field {
 
         countriesArray = new string[countriesAmount];
         int industriesArrLength = (countryIndustriesIndexes.Length + privateIndustriesForEach.Length) * 2 +
-                                  commonIndustriesForEach.Length;
+                                  commonIndustriesForEachFourEnters.Length + commonIndustriesForEachTwoEnters.Length;
         industriesArray = new Industry[industriesArrLength];
 
         int curIndustryArrIndex = 0;
@@ -116,17 +120,18 @@ public class Field {
     }
 
     private void InternationalIndustriesFill(string internDirName, ref int curIndustryArrIndex) {
-        string[] industries = Directory.GetFiles(internDirName);
-        int industriesNeeded = commonIndustriesForEach.Length + 2 * privateIndustriesForEach.Length;
-        List<int> internationalIndustriesIndexes = ChooseNonRepeatableNums(0, industries.Length, industriesNeeded);
-        int curInternationalIndustriesIndexesIndex = 0;
+        string[] industriesDirs = Directory.GetDirectories(internDirName);
+        int industriesNeeded;
+        List<int> internationalIndustriesIndexes;
         List<int> industriesList = new List<int>();
         List<int> arraysIndexesToFill;
 
+        string[] industries = Directory.GetFiles(industriesDirs[1]);
+        industriesNeeded = 2 * privateIndustriesForEach.Length;
+        internationalIndustriesIndexes = ChooseNonRepeatableNums(0, industries.Length, industriesNeeded);
         for (int i = 0; i < fieldArrays.Length; i++) {
             for (int k = 0; k < privateIndustriesForEach.Length; k++) {
-                industriesList.Add(internationalIndustriesIndexes[curInternationalIndustriesIndexesIndex]);
-                curInternationalIndustriesIndexesIndex++;
+                industriesList.Add(internationalIndustriesIndexes[k + i * privateIndustriesForEach.Length]);
             }
 
             arraysIndexesToFill = new List<int>() { i };
@@ -135,18 +140,38 @@ public class Field {
             industriesList.Clear();
         }
 
-        for (int i = 0; i < commonIndustriesForEach.Length; i++) {
-            industriesList.Add(internationalIndustriesIndexes[curInternationalIndustriesIndexesIndex]);
-            curInternationalIndustriesIndexesIndex++;
-        }
-
+        industries = Directory.GetFiles(industriesDirs[0]);
+        industriesNeeded = commonIndustriesForEachTwoEnters.Length;
+        internationalIndustriesIndexes = ChooseNonRepeatableNums(0, industries.Length, industriesNeeded);
         arraysIndexesToFill = new List<int>();
+        
+        for (int i = 0; i < commonIndustriesForEachTwoEnters.Length; i++) {
+            industriesList.Add(internationalIndustriesIndexes[i]);
+        }
 
         for (int i = 0; i < fieldArrays.Length; i++) {
             arraysIndexesToFill.Add(i);
         }
 
-        FillIndustriesInField(industriesList, commonIndustriesForEach, arraysIndexesToFill, ref curIndustryArrIndex,
+        FillIndustriesInField(industriesList, commonIndustriesForEachTwoEnters, arraysIndexesToFill, ref curIndustryArrIndex,
+            industries);
+        industriesList.Clear();
+        
+        
+        industries = Directory.GetFiles(industriesDirs[2]);
+        industriesNeeded = commonIndustriesForEachFourEnters.Length;
+        internationalIndustriesIndexes = ChooseNonRepeatableNums(0, industries.Length, industriesNeeded);
+        arraysIndexesToFill = new List<int>();
+        
+        for (int i = 0; i < commonIndustriesForEachFourEnters.Length; i++) {
+            industriesList.Add(internationalIndustriesIndexes[i]);
+        }
+
+        for (int i = 0; i < fieldArrays.Length; i++) {
+            arraysIndexesToFill.Add(i);
+        }
+
+        FillIndustriesInField(industriesList, commonIndustriesForEachFourEnters, arraysIndexesToFill, ref curIndustryArrIndex,
             industries);
     }
 
@@ -161,7 +186,8 @@ public class Field {
 
             int enterprisesAmount = enterprisesIndexesInField[i].Length;
             List<Position> curIndustry = new List<Position>();
-            industriesArray[curIndustryIndexInGeneralArray] = new Industry(curIndustry, currentIndustryName);
+            industriesArray[curIndustryIndexInGeneralArray] = new Industry(curIndustry, currentIndustryName,
+                UniqueColorForIndustry(curIndustryIndexInGeneralArray));
 
             int startPrice = Convert.ToInt32(curIndustryFile[0].Substring(0, curIndustryFile[0].IndexOf('-')));
             int endPrice = Convert.ToInt32(curIndustryFile[0].Substring(curIndustryFile[0].IndexOf('-') + 1));
@@ -216,5 +242,33 @@ public class Field {
 
         return ans;
     }
-    
+
+    private ConsoleColor UniqueColorForIndustry(int indexCurIndustry) {
+        ConsoleColor color = ConsoleColor.Black;
+        bool isUnique = false;
+
+        do {
+            color = (ConsoleColor)(App.rand.Next(0, 16));
+            isUnique = true;
+            
+            foreach (var badColor in JustOutput.notGoodColors) {
+                if (color == badColor) {
+                    isUnique = false;
+                    break;
+                }
+            }
+
+            if (!isUnique) {
+                continue;
+            }
+            
+            for (int i = 0; i < indexCurIndustry; i++) {
+                if (color == industriesArray[i].color) {
+                    isUnique = false;
+                    break;
+                }
+            }
+        } while (!isUnique);
+        return color;
+    }
 }

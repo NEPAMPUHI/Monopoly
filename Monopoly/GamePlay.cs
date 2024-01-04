@@ -46,6 +46,7 @@ public class GamePlay {
         string messageToPrint;
 
         while (!isGameEnd) {
+            JustOutput.PrintAllField(field, playersInGame);
             curPlayer = playersInGame[curIndexPlayerTurn];
             PreTurnThings(curPlayer, playersInGame);
             
@@ -71,10 +72,10 @@ public class GamePlay {
             }
             curIndexPlayerTurn = (curIndexPlayerTurn + 1) % playersInGame.Count;
 
-            if (curPlayer.IsABot()) {
-                JustOutput.PrintText(OutputPhrases.TextPressEnterToGoNextPlayer());
-                Interactive.PressEnter();
-            }
+            JustOutput.PrintText(OutputPhrases.TextPressEnterToGoNextPlayer());
+            Interactive.PressEnter();
+            
+            
         }
     }
 

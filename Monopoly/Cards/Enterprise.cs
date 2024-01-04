@@ -39,7 +39,7 @@ public class Enterprise : Card {
         priceOthersPayLevel1 = priceToBuy / 2;
         priceOthersPayLevel2 = priceToBuy;
         priceOthersPayLevel3 = priceToBuy * 2;
-        currentPriceOthersPay = priceOthersPayLevel1;
+        currentPriceOthersPay = 0;
 
         UpdateTextToShow();
     }
@@ -82,7 +82,7 @@ public class Enterprise : Card {
         turnsToDisappearIfPawned = 0;
         isBuiltHotel = false;
         isFullIndustry = false;
-        currentPriceOthersPay = priceOthersPayLevel1;
+        currentPriceOthersPay = 0;
         UpdateTextToShow();
     }
 
@@ -139,8 +139,8 @@ public class Enterprise : Card {
 
     private void BuyingCard(Field field, Player player) {
         player.moneyAmount -= priceToBuy;
-        this.owner = player;
-
+        owner = player;
+        currentPriceOthersPay = priceOthersPayLevel1;
         CollectOrDestroyIndustry(field, player, true);
         UpdateTextToShow();
     }

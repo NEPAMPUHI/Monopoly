@@ -26,11 +26,10 @@ public static class OutputPhrases {
     public static string[] TextToShowEnterprise(Enterprise enterprise) {
         return new[] {
             enterprise.title,
-            enterprise.industry.industryName,
             enterprise.priceOthersPayLevel1 + "|" + enterprise.priceOthersPayLevel2 + "|" + enterprise.priceOthersPayLevel3,
-            "До сплати: " + ((enterprise.owner == null) ? 0 : enterprise.currentPriceOthersPay),
-            (enterprise.owner == null) ? "Власника немає" : enterprise.owner.nameInGame,
-            (enterprise.IsPawned()) ? "Заклали (ще " + enterprise.turnsToDisappearIfPawned + ")" : "Не закладено"
+            "До сплати: " + enterprise.currentPriceOthersPay,
+            (enterprise.owner == null) ? "-" : 
+                (enterprise.owner.nameInGame + (enterprise.IsPawned() ? " (" + enterprise.turnsToDisappearIfPawned + ")" : "")),
         };
     }
 
@@ -201,7 +200,7 @@ public static class OutputPhrases {
     }
 
     public static string TextPlayerInfo(Player player, Field field) {
-        return "Гравець " + player.nameInGame + " зараз має " + player.moneyAmount + " гривень. " +
+        return " зараз має " + player.moneyAmount + " гривень. " +
                               "Знаходиться у " + GetCountryNameByPlayer(field, player) +
                               " на клітинці " + PrintCellTitleInAText(field.TakeCardByPlayerPos(player)) +
                               ". Його підприємства: ";
@@ -305,9 +304,9 @@ public static class OutputPhrases {
             else {
                 cardText = field.fieldArrays[indexes[1]][indexes[2]].TextToPrintInAField;
             }
-
-            int emptyStrBelowAmount = (cellHeight - cardText.Length) / 2;
-            int emptyStrAboveAmount = cellHeight - (cardText.Length + emptyStrBelowAmount);
+            
+            int emptyStrAboveAmount = (cellHeight - cardText.Length) / 2;
+            int emptyStrBelowAmount = cellHeight - (cardText.Length + emptyStrAboveAmount);
 
             int index = 0;
             for (int k = 0; k < emptyStrAboveAmount; k++, index++) {
@@ -342,14 +341,6 @@ public static class OutputPhrases {
 
         return res;
     }
-
-    public static string LineAboveOrBelow(bool isAbove) {
-        string strToReturn = "";
-        strToReturn += isAbove ? ' ' : '|';
-        strToReturn += new string('_', JustOutput.maxSymbolsInOneCell + 2);
-        strToReturn += isAbove ? ' ' : '|';
-        return strToReturn;
-    }
     
     public static string PrintCellTitleInAText(Card? card) {
         return ((card is null) ?
@@ -379,7 +370,7 @@ public static class OutputPhrases {
         string strToDuplicate = "";
 
         strToDuplicate += withSideBoards ? '|' : ' ';
-        strToDuplicate += new string('_', maxCellWidth);
+        strToDuplicate += new string('_', JustOutput.maxSymbolsInOneCell + 2);
         strToDuplicate += withSideBoards ? '|' : ' ';
         strToDuplicate += ' ';
 

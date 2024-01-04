@@ -8,6 +8,11 @@ public static class JustOutput { // Максимум в ширину — 186 с�
     public static readonly int maxCellsInOneLine = 8;
     public static readonly int maxSymbolsInOneCell = 16;
     public static readonly int screenWidth = 186;
+    public static readonly List<ConsoleColor> notGoodColors = new List<ConsoleColor> {
+        ConsoleColor.Black,
+        ConsoleColor.DarkGray,
+        ConsoleColor.Gray
+    };
 
     public static void PrintAListOfEnterprisesInOneLine(List<Enterprise> enterprises) {
         string[][] enterprisesInLines = new string[enterprises.Count][];
@@ -56,7 +61,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
     }
 
     public static void PrintText(string textToPrint) {
-        Thread.Sleep(500);
+        Thread.Sleep(200);
         Console.WriteLine(textToPrint);
     }
 
@@ -70,6 +75,10 @@ public static class JustOutput { // Максимум в ширину — 186 с�
     public static void PrintPlayersInfo(List<Player> playersInGame, Field field) {
         Console.WriteLine();
         foreach (var player in playersInGame) {
+            ConsoleColor fore = Console.ForegroundColor;
+            Console.ForegroundColor = player.chipColor;
+            Console.Write(player.nameInGame);
+            Console.ForegroundColor = fore;
             Console.WriteLine(OutputPhrases.TextPlayerInfo(player, field));
             PrintAListOfEnterprisesInOneLine(player.GetAllPlayerEnterprises(field));
         }
@@ -103,11 +112,16 @@ public static class JustOutput { // Максимум в ширину — 186 с�
         Console.Write("Мій вибір: ");
     }
 
-    public static void PrintAllField(Field field) {
+    public static void PrintAllField(Field field, List<Player> players) {
         List<int>[][] fieldIndexes = OutputPhrases.fieldIndexes;
         int cellWidth = OutputPhrases.maxCellWidth;
         int cellHeight = OutputPhrases.cellHeight;
-
+        int sleepTime = 15;
+        int chipWidth = 2;
+        List<List<int>> positions = new List<List<int>>();
+        List<List<Player>> playersOnPositions = new List<List<Player>>();
+        PlayersPlacesInField(ref positions, ref playersOnPositions, players);
+    
         Console.Write(" ");
         foreach (var list in fieldIndexes[0]) {
             if (OutputPhrases.IsNotBoard(list)) {
@@ -118,6 +132,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
             }
             Console.Write(" ");
         }
+        Thread.Sleep(sleepTime);
         Console.WriteLine();
         for (int l = 0; l < fieldIndexes.Length; l++) {
             string[][] curListCells = new string[fieldIndexes[l].Length][];
@@ -132,7 +147,8 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                     Console.Write("|");
                 }
                 for (int k = 0; k < fieldIndexes[l].Length; k++) {
-                    Console.Write(curListCells[k][i]);
+                    //Console.Write(curListCells[k][i]);
+                    PrintOneStringInCell(field, fieldIndexes[l][k], i);
                     if (!OutputPhrases.IsNotBoard(fieldIndexes[l][k])) {
                         Console.Write("|");
                     }
@@ -143,6 +159,7 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                         Console.Write(" ");
                     }
                 }
+                Thread.Sleep(sleepTime);
                 Console.WriteLine();
             }
             if (OutputPhrases.IsNotBoard(fieldIndexes[l][0])) {
@@ -157,7 +174,13 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                     Console.Write(new string(' ', cellWidth));
                 }
                 else {
-                    Console.Write(new string('_', cellWidth));
+                    int index = GetPlayersByPos(fieldIndexes[l][i], positions, playersOnPositions);
+                    if (index != -1) {
+                        WritePlayersOnWideUnderline(playersOnPositions[index], cellWidth, chipWidth);
+                    }
+                    else {
+                        Console.Write(new string('_', cellWidth));
+                    }
                 }
                 
                 if (!OutputPhrases.IsNotBoard(fieldIndexes[l][i])) {
@@ -170,7 +193,94 @@ public static class JustOutput { // Максимум в ширину — 186 с�
                     Console.Write(" ");
                 }
             }
+            Thread.Sleep(sleepTime);
             Console.WriteLine();
         }
+    }
+
+    public static void PrintOneStringInCell(Field field, List<int> cellIndexes, int stringIndex) {
+        string[] stringText = OutputPhrases.GetCellText(field, cellIndexes);
+        if (cellIndexes[0] == 1 && stringIndex == 0 && cellIndexes[1] != -1 && field.fieldArrays[cellIndexes[1]][cellIndexes[2]] is Enterprise enterprise) {
+            ConsoleColor backColor = Console.BackgroundColor;
+            ConsoleColor foreColor = Console.ForegroundColor;
+            Console.BackgroundColor = enterprise.industry.color;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.Write(stringText[stringIndex]);
+            Console.BackgroundColor = backColor;
+            Console.ForegroundColor = foreColor;
+        }
+        else {
+            Console.Write(stringText[stringIndex]);
+        }
+    }
+
+    private static void PlayersPlacesInField(ref List<List<int>> positions, ref List<List<Player>> playersOnPositions, List<Player> players) {
+        foreach (var player in players) {
+            List<int> list = new List<int> {
+                1,
+                player.positionInField == null ? -1 : player.positionInField.arrayIndex,
+                player.positionInField == null ? 0 : player.positionInField.cellIndex
+            };
+
+            int index = GetPlayersByPos(list, positions, playersOnPositions);
+            if (index != -1) {
+                playersOnPositions[index].Add(player);
+            }
+            else {
+                positions.Add(list);
+                playersOnPositions.Add( new List<Player> {player});
+            }
+        }
+    }
+
+    private static int GetPlayersByPos(List<int> pos, List<List<int>> positions,
+        List<List<Player>> playersOnPositions) {
+        for (int i = 0; i < positions.Count; i++) {
+            if (AreListsEqual(positions[i], pos)) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    private static bool AreListsEqual(List<int> fList, List<int> sList) {
+        if (fList.Count != sList.Count) {
+            return false;
+        }
+        for (int i = 0; i < fList.Count; i++) {
+            if (fList[i] != sList[i]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void WritePlayersOnWideUnderline(List<Player> playersOnCell, int cellWidth, int chipWidth) {
+        int playersAmount = playersOnCell.Count;
+        int freeSpace = cellWidth - playersAmount * chipWidth;
+        int betweenSpace = 0;
+        if (playersAmount > 1) {
+            betweenSpace = freeSpace / (playersAmount + 1);
+        }
+        
+        int leftSpace = (cellWidth - (betweenSpace * (playersAmount - 1) + chipWidth * playersAmount)) / 2;
+        int rightSpace = cellWidth - (leftSpace + betweenSpace * (playersAmount - 1) + chipWidth * playersAmount);
+
+        ConsoleColor back = Console.BackgroundColor;
+        
+        Console.Write(new string('_', leftSpace));
+
+        bool isFirst = true;
+        foreach (var player in playersOnCell) {
+            if (!isFirst) {
+                Console.Write(new string('_', betweenSpace));
+            }
+            Console.BackgroundColor = player.chipColor;
+            Console.Write(new string('_', chipWidth));
+            Console.BackgroundColor = back;
+            isFirst = false;
+        }
+
+        Console.Write(new string('_', rightSpace));
     }
 }
